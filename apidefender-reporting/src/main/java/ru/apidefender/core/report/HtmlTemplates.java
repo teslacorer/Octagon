@@ -16,13 +16,30 @@ public class HtmlTemplates {
         String sevSummary = sevCounts.entrySet().stream()
                 .map(e -> "<span class='sev sev-"+cls(e.getKey())+"'>"+escape(e.getKey())+": "+e.getValue()+"</span>")
                 .collect(Collectors.joining(" &#160; "));
+        // OWASP Risk summary
+        Map<String,Integer> riskCounts = new HashMap<>();
+        for (ReportModel.SecurityIssue si : r.security) {
+            try {
+                ru.apidefender.core.risk.RiskAssessor.Risk rk = ru.apidefender.core.risk.RiskAssessor.compute(si);
+                riskCounts.merge(rk.rating, 1, Integer::sum);
+            } catch (Exception ignored) {}
+        }
+        String riskSummary = riskCounts.entrySet().stream()
+                .map(e -> "<span class='sev sev-"+cls(e.getKey())+"'>"+escape(e.getKey())+": "+e.getValue()+"</span>")
+                .collect(Collectors.joining(" &#160; "));
 
         String issues = r.security.stream().map(i -> {
             String details = renderDetails(r.meta.tracesDir, i.traceRef);
+            String riskCell = "";
+            try {
+                ru.apidefender.core.risk.RiskAssessor.Risk rk = ru.apidefender.core.risk.RiskAssessor.compute(i);
+                riskCell = escape(rk.rating+" ("+String.format(java.util.Locale.US, "%.1f", rk.score)+")");
+            } catch (Exception ignored) {}
             return "<tr class='sev-"+cls(i.severity)+"'>"+
                     td(escape(i.category))+
                     td(escape(i.severity))+
                     td(escape(i.method+" "+i.endpoint))+
+                    td(riskCell)+
                     td(escape(i.description))+
                     td(details)+
                     "</tr>";
@@ -57,10 +74,10 @@ public class HtmlTemplates {
                 + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />"
                 + "<title>Отчет API Defender</title>"
                 + "<style type=\"text/css\">"
-                + "body{font-family:sans-serif} table{border-collapse:collapse;width:100%} td,th{border:1px solid #ccc;padding:6px}"
-                + ".sev{padding:3px 6px;border-radius:4px;color:#fff}"
-                + ".sev-low{background:#2e7d32} .sev-medium{background:#f9a825} .sev-high{background:#ef6c00} .sev-critical{background:#c62828}"
-                + "tr.sev-low{background:#e8f5e9} tr.sev-medium{background:#fff8e1} tr.sev-high{background:#fff3e0} tr.sev-critical{background:#ffebee}"
+                + "body{font-family:sans-serif} table{border-collapse:collapse;width:100%} td,th{border:1px solid #bbb;padding:8px}"
+                + ".sev{padding:3px 8px;border-radius:4px;color:#fff;font-weight:600}"
+                + ".sev-low{background:#00c853} .sev-medium{background:#ffa000} .sev-high{background:#ff6f00} .sev-critical{background:#d50000}"
+                + "tr.sev-low{background:#c8e6c9} tr.sev-medium{background:#ffe082} tr.sev-high{background:#ffcc80} tr.sev-critical{background:#ef9a9a}"
                 + "details summary{cursor:pointer;color:#1565c0} pre{white-space:pre-wrap;background:#f6f8fa;padding:8px;border-radius:4px}"
                 + "</style>"
                 + "</head><body>"
