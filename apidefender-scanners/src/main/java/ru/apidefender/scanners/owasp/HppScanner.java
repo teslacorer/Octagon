@@ -10,7 +10,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class HppScanner implements SPI {
-    @Override public String getCategory() { return "HPP"; }
+    @Override public String getCategory() { return "RateLimit"; }
 
     @Override
     public CompletableFuture<Void> run(ScanContext ctx) {

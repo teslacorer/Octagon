@@ -10,6 +10,7 @@ import ru.apidefender.core.log.JsonlLogger;
 import ru.apidefender.core.openapi.OpenApiLoader;
 import ru.apidefender.core.report.ReportModel;
 import ru.apidefender.core.report.ReportWriter;
+import ru.apidefender.core.risk.RiskAssessor;
 import ru.apidefender.scanners.SPI;
 import ru.apidefender.scanners.owasp.*;
 import ru.apidefender.scanners.simple.CorsHeadersScanner;
@@ -65,6 +66,18 @@ public class ScanCommand implements Callable<Integer> {
     @CommandLine.Option(names = "--safety-skip-delete", description = "Не выполнять DELETE при эксплуатации", defaultValue = "true")
     boolean safetySkipDelete;
 
+    @CommandLine.Option(names = "--debug", description = "Подробные трейсы (печать полных запросов/ответов)", defaultValue = "false")
+    boolean debugFlag;
+
+    @CommandLine.Option(names = "--mask-secrets", description = "Маскировать секреты (JWT) в логах/трейсах", defaultValue = "true")
+    boolean maskSecrets;
+
+    @CommandLine.Option(names = "--telemetry-endpoint", description = "URL для отправки анонимной телеметрии")
+    String telemetryEndpoint;
+
+    @CommandLine.Option(names = "--telemetry-opt-in", description = "Разрешить отправку анонимной телеметрии", defaultValue = "false")
+    boolean telemetryOptIn;
+
     private static JsonNode cachedSpecRoot;
 
     private static Duration parseDuration(String s) {
@@ -77,7 +90,7 @@ public class ScanCommand implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        boolean debug = Objects.equals(logLevel, "debug");
+        boolean debug = Objects.equals(logLevel, "debug") || debugFlag;
         JsonlLogger log = new JsonlLogger(debug, logFile);
         Instant started = Instant.now();
         log.info("Начало сканирования: базовый URL=" + (baseUrl!=null? baseUrl: "(из OpenAPI)") + ", пресет="+preset);
@@ -98,7 +111,7 @@ public class ScanCommand implements Callable<Integer> {
         String token = Files.readString(tokenFile).trim();
         Files.createDirectories(tracesDir);
 
-        HttpClient http = new HttpClient(dur, token, true);
+        HttpClient http = new HttpClient(dur, token, maskSecrets);
         ReportModel report = new ReportModel();
         report.meta.startedAt = started.toString();
         report.meta.preset = pr.name().toLowerCase();
@@ -364,10 +377,36 @@ public class ScanCommand implements Callable<Integer> {
         report.meta.finishedAt = finished.toString();
         report.meta.durationMs = Duration.between(started, finished).toMillis();
 
+        // OWASP Risk Rating: compute for each issue; update severity and append to description
+        for (ReportModel.SecurityIssue si : report.security) {
+            try {
+                RiskAssessor.Risk risk = RiskAssessor.compute(si);
+                // Align severity with risk rating
+                si.severity = risk.rating;
+                String marker = String.format(" [OWASP Risk: %s (L=%.1f, I=%.1f, S=%.1f)]", risk.rating, risk.likelihood, risk.impact, risk.score);
+                if (si.description == null) si.description = "";
+                if (!si.description.contains("OWASP Risk:")) si.description += marker;
+            } catch (Exception ignored) {}
+        }
+
         ReportWriter writer = new ReportWriter();
         writer.writeJson(report, reportJson);
         writer.writeHtml(report, reportHtml);
         writer.writePdf(report, reportPdf);
+
+        // Optional anonymous telemetry
+        if (telemetryOptIn && telemetryEndpoint != null && !telemetryEndpoint.isBlank()) {
+            try {
+                okhttp3.OkHttpClient c = new okhttp3.OkHttpClient.Builder().callTimeout(java.time.Duration.ofSeconds(5)).build();
+                com.fasterxml.jackson.databind.ObjectMapper om = new com.fasterxml.jackson.databind.ObjectMapper();
+                String payload = om.writeValueAsString(report.telemetry);
+                okhttp3.Request req = new okhttp3.Request.Builder()
+                        .url(telemetryEndpoint)
+                        .post(okhttp3.RequestBody.create(payload, okhttp3.MediaType.parse("application/json")))
+                        .build();
+                c.newCall(req).execute().close();
+            } catch (Exception ignored) {}
+        }
 
         log.info("Сканирование завершено. Эндпоинтов: "+eps+", запросов: "+report.telemetry.requestsTotal+", длительность: "+report.meta.durationMs+" мс");
         return 0;

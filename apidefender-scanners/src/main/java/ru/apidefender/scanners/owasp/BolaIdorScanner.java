@@ -62,7 +62,8 @@ public class BolaIdorScanner implements SPI {
                             if (ok && diff) {
                                 ReportModel.SecurityIssue si = new ReportModel.SecurityIssue();
                                 si.id = UUID.randomUUID().toString();
-                                si.category = getCategory();
+                                // Отдельно классифицируем BOLA на пользовательских ресурсах
+                                si.category = (p.toLowerCase().contains("/user") || p.toLowerCase().contains("users/")) ? "BOLA" : getCategory();
                                 si.severity = "High";
                                 si.endpoint = p;
                                 si.method = "GET";
@@ -88,7 +89,7 @@ public class BolaIdorScanner implements SPI {
                             if (code >= 200 && code < 300) {
                                 ReportModel.SecurityIssue si = new ReportModel.SecurityIssue();
                                 si.id = UUID.randomUUID().toString();
-                                si.category = getCategory();
+                                si.category = (p.toLowerCase().contains("/user") || p.toLowerCase().contains("users/")) ? "BOLA" : getCategory();
                                 si.severity = "High";
                                 si.endpoint = p;
                                 si.method = "GET";

@@ -40,6 +40,29 @@ public class WeakAuthScanner implements SPI {
                             synchronized (ctx.report.security){ ctx.report.security.add(si);} 
                         }
                     } catch (Exception ignored) {}
+
+                    // Принимается ли неверный/поддельный токен?
+                    try {
+                        Map<String,String> bad = new HashMap<>();
+                        bad.put("Authorization", "Bearer invalid.invalid.invalid");
+                        try (Response rBad = ctx.http.request("GET", url, bad, null)) {
+                            int codeBad = rBad.code();
+                            if (codeBad >= 200 && codeBad < 300) {
+                                ReportModel.SecurityIssue si = new ReportModel.SecurityIssue();
+                                si.id = UUID.randomUUID().toString();
+                                si.category = getCategory();
+                                si.severity = "High";
+                                si.endpoint = p;
+                                si.method = "GET";
+                                si.description = "Слабая проверка токена: принят заведомо неверный JWT";
+                                si.evidence = "GET + Authorization: Bearer invalid => "+codeBad;
+                                si.impact = "Обход аутентификации";
+                                si.recommendation = "Проверять подпись/валидность токена, обрабатывать истекшие/поддельные токены";
+                                si.traceRef = ctx.traceSaver.save(url, "GET", null, rBad);
+                                synchronized (ctx.report.security){ ctx.report.security.add(si);} 
+                            }
+                        }
+                    } catch (Exception ignored) {}
                 }
             } catch (Exception ignored) {}
         });

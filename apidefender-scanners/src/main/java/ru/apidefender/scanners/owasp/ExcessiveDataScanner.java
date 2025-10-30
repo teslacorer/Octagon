@@ -44,6 +44,22 @@ public class ExcessiveDataScanner implements SPI {
                                 si.traceRef = ctx.traceSaver.save(url, "GET", null, r);
                                 synchronized (ctx.report.security){ ctx.report.security.add(si);} 
                             }
+                            // PII detection (best-effort)
+                            List<String> piiHits = detectPii(body);
+                            if (!piiHits.isEmpty()) {
+                                ReportModel.SecurityIssue si2 = new ReportModel.SecurityIssue();
+                                si2.id = UUID.randomUUID().toString();
+                                si2.category = getCategory();
+                                si2.severity = "Medium";
+                                si2.endpoint = p;
+                                si2.method = "GET";
+                                si2.description = "Обнаружены потенциальные PII-поля в ответе";
+                                si2.evidence = String.join(", ", piiHits);
+                                si2.impact = "Риск утечки персональных данных";
+                                si2.recommendation = "Исключить/маскировать PII в ответах, внедрить фильтрацию";
+                                si2.traceRef = ctx.traceSaver.save(url, "GET", null, r);
+                                synchronized (ctx.report.security){ ctx.report.security.add(si2);} 
+                            }
                         }
                     }
                 } catch (Exception ignored) {}
@@ -68,4 +84,19 @@ public class ExcessiveDataScanner implements SPI {
             for (int i=0;i<node.size();i++) findUnknown(node.get(i), items, path+"["+i+"]", out);
         }
     }
+
+    private List<String> detectPii(String body) {
+        List<String> hits = new ArrayList<>();
+        try {
+            if (body == null) return hits;
+            if (body.matches("(?s).*[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}.*")) hits.add("email");
+            if (body.matches("(?s).*(?:\\+?[0-9][0-9\\-()\\s]{7,}[0-9]).*")) hits.add("phone");
+            if (body.matches("(?s).*(?:[0-9]{13,19}).*")) hits.add("card-like");
+            if (body.toLowerCase().matches("(?s).*(passport|ssn|inn|snils).*")) hits.add("PII-keywords");
+        } catch (Exception ignored) {}
+        return hits;
+    }
 }
+
+
+

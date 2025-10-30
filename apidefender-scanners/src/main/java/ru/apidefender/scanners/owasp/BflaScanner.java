@@ -11,7 +11,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class BflaScanner implements SPI {
-    @Override public String getCategory() { return "BFLA"; }
+    @Override public String getCategory() { return "WeakAuth"; }
 
     @Override
     public CompletableFuture<Void> run(ScanContext ctx) {
