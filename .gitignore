@@ -1,0 +1,19 @@
+# Secrets and credentials
+token.jwt
+api_key.md
+
+# Local outputs and logs
+out/
+*.log
+
+# Build artifacts
+apidefender_prompts_bundle.zip
+apidefender-*.jar
+target/
+**/target/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.tmp
