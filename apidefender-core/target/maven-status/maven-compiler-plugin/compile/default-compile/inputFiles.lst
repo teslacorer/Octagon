@@ -1,0 +1,6 @@
+/src/apidefender-core/src/main/java/ru/apidefender/core/http/HttpClient.java
+/src/apidefender-core/src/main/java/ru/apidefender/core/Config.java
+/src/apidefender-core/src/main/java/ru/apidefender/core/report/ReportModel.java
+/src/apidefender-core/src/main/java/ru/apidefender/core/http/Masking.java
+/src/apidefender-core/src/main/java/ru/apidefender/core/log/JsonlLogger.java
+/src/apidefender-core/src/main/java/ru/apidefender/core/openapi/OpenApiLoader.java

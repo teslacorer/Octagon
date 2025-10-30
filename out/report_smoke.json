@@ -1,0 +1,854 @@
+{
+  "meta" : {
+    "startedAt" : "2025-10-30T05:51:55.370966258Z",
+    "finishedAt" : "2025-10-30T05:52:16.964157413Z",
+    "durationMs" : 21593,
+    "preset" : "fast",
+    "target" : "https://vbank.open.bankingapi.ru/",
+    "openapiVersion" : "3.1.0",
+    "endpointsScanned" : 65,
+    "tracesDir" : "/out/traces_smoke"
+  },
+  "contract" : {
+    "mismatches" : [ {
+      "endpoint" : "/admin/payments",
+      "method" : "GET",
+      "issue" : "Код ответа не описан в OpenAPI: 500",
+      "evidence" : "response.status=500",
+      "traceRef" : "GET_https_vbank_open_bankingapi_ru_admin_payments_500_1761803516456.json"
+    }, {
+      "endpoint" : "/accounts",
+      "method" : "POST",
+      "issue" : "Код ответа не описан в OpenAPI: 401",
+      "evidence" : "response.status=401",
+      "traceRef" : "POST_https_vbank_open_bankingapi_ru_accounts_401_1761803516452.json"
+    }, {
+      "endpoint" : "/domestic-vrp-payments",
+      "method" : "POST",
+      "issue" : "Код ответа не описан в OpenAPI: 401",
+      "evidence" : "response.status=401",
+      "traceRef" : "POST_https_vbank_open_bankingapi_ru_domestic_vrp_payments_401_1761803516618.json"
+    }, {
+      "endpoint" : "/accounts/{account_id}/close",
+      "method" : "PUT",
+      "issue" : "Код ответа не описан в OpenAPI: 401",
+      "evidence" : "response.status=401",
+      "traceRef" : "PUT_https_vbank_open_bankingapi_ru_accounts_account_id_close_401_1761803516590.json"
+    }, {
+      "endpoint" : "/accounts/{account_id}/status",
+      "method" : "PUT",
+      "issue" : "Код ответа не описан в OpenAPI: 401",
+      "evidence" : "response.status=401",
+      "traceRef" : "PUT_https_vbank_open_bankingapi_ru_accounts_account_id_status_401_1761803516588.json"
+    }, {
+      "endpoint" : "/account-consents/{consent_id}",
+      "method" : "DELETE",
+      "issue" : "Код ответа не описан в OpenAPI: 404",
+      "evidence" : "response.status=404",
+      "traceRef" : "DELETE_https_vbank_open_bankingapi_ru_account_consents_consent_id__404_1761803516603.json"
+    }, {
+      "endpoint" : "/payments",
+      "method" : "POST",
+      "issue" : "Код ответа не описан в OpenAPI: 401",
+      "evidence" : "response.status=401",
+      "traceRef" : "POST_https_vbank_open_bankingapi_ru_payments_401_1761803516619.json"
+    }, {
+      "endpoint" : "/accounts",
+      "method" : "GET",
+      "issue" : "Код ответа не описан в OpenAPI: 401",
+      "evidence" : "response.status=401",
+      "traceRef" : "GET_https_vbank_open_bankingapi_ru_accounts_401_1761803516774.json"
+    }, {
+      "endpoint" : "/auth/me",
+      "method" : "GET",
+      "issue" : "Код ответа не описан в OpenAPI: 401",
+      "evidence" : "response.status=401",
+      "traceRef" : "GET_https_vbank_open_bankingapi_ru_auth_me_401_1761803516771.json"
+    }, {
+      "endpoint" : "/accounts/{account_id}",
+      "method" : "GET",
+      "issue" : "Код ответа не описан в OpenAPI: 500",
+      "evidence" : "response.status=500",
+      "traceRef" : "GET_https_vbank_open_bankingapi_ru_accounts_account_id__500_1761803516879.json"
+    }, {
+      "endpoint" : "/accounts/{account_id}/balances",
+      "method" : "GET",
+      "issue" : "Код ответа не описан в OpenAPI: 500",
+      "evidence" : "response.status=500",
+      "traceRef" : "GET_https_vbank_open_bankingapi_ru_accounts_account_id_balances_500_1761803516900.json"
+    }, {
+      "endpoint" : "/accounts/{account_id}/transactions",
+      "method" : "GET",
+      "issue" : "Код ответа не описан в OpenAPI: 500",
+      "evidence" : "response.status=500",
+      "traceRef" : "GET_https_vbank_open_bankingapi_ru_accounts_account_id_transactions_500_1761803516902.json"
+    }, {
+      "endpoint" : "/account-consents/{consent_id}",
+      "method" : "GET",
+      "issue" : "Код ответа не описан в OpenAPI: 404",
+      "evidence" : "response.status=404",
+      "traceRef" : "GET_https_vbank_open_bankingapi_ru_account_consents_consent_id__404_1761803516909.json"
+    }, {
+      "endpoint" : "/domestic-vrp-payments/{payment_id}",
+      "method" : "GET",
+      "issue" : "Код ответа не описан в OpenAPI: 401",
+      "evidence" : "response.status=401",
+      "traceRef" : "GET_https_vbank_open_bankingapi_ru_domestic_vrp_payments_payment_id__401_1761803516921.json"
+    }, {
+      "endpoint" : "/payments/{payment_id}",
+      "method" : "GET",
+      "issue" : "Код ответа не описан в OpenAPI: 401",
+      "evidence" : "response.status=401",
+      "traceRef" : "GET_https_vbank_open_bankingapi_ru_payments_payment_id__401_1761803516917.json"
+    }, {
+      "endpoint" : "/product-agreements",
+      "method" : "POST",
+      "issue" : "Код ответа не описан в OpenAPI: 401",
+      "evidence" : "response.status=401",
+      "traceRef" : "POST_https_vbank_open_bankingapi_ru_product_agreements_401_1761803517190.json"
+    }, {
+      "endpoint" : "/product-agreements/{agreement_id}",
+      "method" : "DELETE",
+      "issue" : "Код ответа не описан в OpenAPI: 401",
+      "evidence" : "response.status=401",
+      "traceRef" : "DELETE_https_vbank_open_bankingapi_ru_product_agreements_agreement_id__401_1761803517193.json"
+    }, {
+      "endpoint" : "/customer-leads/{customer_lead_id}",
+      "method" : "DELETE",
+      "issue" : "Код ответа не описан в OpenAPI: 404",
+      "evidence" : "response.status=404",
+      "traceRef" : "DELETE_https_vbank_open_bankingapi_ru_customer_leads_customer_lead_id__404_1761803517199.json"
+    }, {
+      "endpoint" : "/product-application",
+      "method" : "POST",
+      "issue" : "Код ответа не описан в OpenAPI: 401",
+      "evidence" : "response.status=401",
+      "traceRef" : "POST_https_vbank_open_bankingapi_ru_product_application_401_1761803517196.json"
+    }, {
+      "endpoint" : "/product-application/{application_id}",
+      "method" : "DELETE",
+      "issue" : "Код ответа не описан в OpenAPI: 401",
+      "evidence" : "response.status=401",
+      "traceRef" : "DELETE_https_vbank_open_bankingapi_ru_product_application_application_id__401_1761803517195.json"
+    }, {
+      "endpoint" : "/product-offer-consents",
+      "method" : "POST",
+      "issue" : "Код ответа не описан в OpenAPI: 401",
+      "evidence" : "response.status=401",
+      "traceRef" : "POST_https_vbank_open_bankingapi_ru_product_offer_consents_401_1761803517334.json"
+    }, {
+      "endpoint" : "/product-offer-consents/{consent_id}",
+      "method" : "DELETE",
+      "issue" : "Код ответа не описан в OpenAPI: 404",
+      "evidence" : "response.status=404",
+      "traceRef" : "DELETE_https_vbank_open_bankingapi_ru_product_offer_consents_consent_id__404_1761803517341.json"
+    }, {
+      "endpoint" : "/vrp-consents",
+      "method" : "POST",
+      "issue" : "Код ответа не описан в OpenAPI: 401",
+      "evidence" : "response.status=401",
+      "traceRef" : "POST_https_vbank_open_bankingapi_ru_vrp_consents_401_1761803517338.json"
+    }, {
+      "endpoint" : "/product-offers/{offer_id}",
+      "method" : "DELETE",
+      "issue" : "Код ответа не описан в OpenAPI: 404",
+      "evidence" : "response.status=404",
+      "traceRef" : "DELETE_https_vbank_open_bankingapi_ru_product_offers_offer_id__404_1761803517339.json"
+    }, {
+      "endpoint" : "/vrp-consents/{consent_id}",
+      "method" : "DELETE",
+      "issue" : "Код ответа не описан в OpenAPI: 401",
+      "evidence" : "response.status=401",
+      "traceRef" : "DELETE_https_vbank_open_bankingapi_ru_vrp_consents_consent_id__401_1761803517340.json"
+    }, {
+      "endpoint" : "/banker/consents/{request_id}/approve",
+      "method" : "PUT",
+      "issue" : "Код ответа не описан в OpenAPI: 404",
+      "evidence" : "response.status=404",
+      "traceRef" : "PUT_https_vbank_open_bankingapi_ru_banker_consents_request_id_approve_404_1761803517500.json"
+    }, {
+      "endpoint" : "/products/{product_id}",
+      "method" : "GET",
+      "issue" : "Код ответа не описан в OpenAPI: 404",
+      "evidence" : "response.status=404",
+      "traceRef" : "GET_https_vbank_open_bankingapi_ru_products_product_id__404_1761803517504.json"
+    }, {
+      "endpoint" : "/banker/consents/{request_id}/reject",
+      "method" : "PUT",
+      "issue" : "Код ответа не описан в OpenAPI: 404",
+      "evidence" : "response.status=404",
+      "traceRef" : "PUT_https_vbank_open_bankingapi_ru_banker_consents_request_id_reject_404_1761803517501.json"
+    }, {
+      "endpoint" : "/product-agreements",
+      "method" : "GET",
+      "issue" : "Код ответа не описан в OpenAPI: 401",
+      "evidence" : "response.status=401",
+      "traceRef" : "GET_https_vbank_open_bankingapi_ru_product_agreements_401_1761803517589.json"
+    }, {
+      "endpoint" : "/product-agreements/{agreement_id}",
+      "method" : "GET",
+      "issue" : "Код ответа не описан в OpenAPI: 401",
+      "evidence" : "response.status=401",
+      "traceRef" : "GET_https_vbank_open_bankingapi_ru_product_agreements_agreement_id__401_1761803517623.json"
+    }, {
+      "endpoint" : "/product-application/{application_id}",
+      "method" : "GET",
+      "issue" : "Код ответа не описан в OpenAPI: 401",
+      "evidence" : "response.status=401",
+      "traceRef" : "GET_https_vbank_open_bankingapi_ru_product_application_application_id__401_1761803517640.json"
+    }, {
+      "endpoint" : "/product-application",
+      "method" : "GET",
+      "issue" : "Код ответа не описан в OpenAPI: 401",
+      "evidence" : "response.status=401",
+      "traceRef" : "GET_https_vbank_open_bankingapi_ru_product_application_401_1761803517638.json"
+    }, {
+      "endpoint" : "/customer-leads/{customer_lead_id}",
+      "method" : "GET",
+      "issue" : "Код ответа не описан в OpenAPI: 404",
+      "evidence" : "response.status=404",
+      "traceRef" : "GET_https_vbank_open_bankingapi_ru_customer_leads_customer_lead_id__404_1761803517650.json"
+    }, {
+      "endpoint" : "/product-offers/{offer_id}",
+      "method" : "GET",
+      "issue" : "Код ответа не описан в OpenAPI: 404",
+      "evidence" : "response.status=404",
+      "traceRef" : "GET_https_vbank_open_bankingapi_ru_product_offers_offer_id__404_1761803517755.json"
+    }, {
+      "endpoint" : "/product-offer-consents/{consent_id}",
+      "method" : "GET",
+      "issue" : "Код ответа не описан в OpenAPI: 404",
+      "evidence" : "response.status=404",
+      "traceRef" : "GET_https_vbank_open_bankingapi_ru_product_offer_consents_consent_id__404_1761803517781.json"
+    }, {
+      "endpoint" : "/vrp-consents/{consent_id}",
+      "method" : "GET",
+      "issue" : "Код ответа не описан в OpenAPI: 401",
+      "evidence" : "response.status=401",
+      "traceRef" : "GET_https_vbank_open_bankingapi_ru_vrp_consents_consent_id__401_1761803517782.json"
+    }, {
+      "endpoint" : "/banker/clients/{client_id}",
+      "method" : "GET",
+      "issue" : "Код ответа не описан в OpenAPI: 404",
+      "evidence" : "response.status=404",
+      "traceRef" : "GET_https_vbank_open_bankingapi_ru_banker_clients_client_id__404_1761803517928.json"
+    } ],
+    "undocumented" : [ {
+      "path" : "/openapi.json",
+      "method" : "GET",
+      "status" : 200,
+      "evidence" : "GET /openapi.json => 200",
+      "traceRef" : "GET_https_vbank_open_bankingapi_ru_openapi_json_200_1761803518719.json"
+    } ]
+  },
+  "security" : [ {
+    "id" : "feab5974-7a1e-4727-919d-0eb10104eb0d",
+    "category" : "CORS",
+    "severity" : "Medium",
+    "endpoint" : "/",
+    "method" : "GET",
+    "description" : "Отсутствует заголовок Access-Control-Allow-Origin",
+    "evidence" : "Access-Control-Allow-Origin: null",
+    "impact" : "Риск междоменного доступа к ресурсам",
+    "recommendation" : "Установить конкретные доверенные источники или явно пометить путь публичным",
+    "traceRef" : "GET_https_vbank_open_bankingapi_ru__200_1761803518858.json"
+  }, {
+    "id" : "aed6e83b-91ca-42ca-9f79-a399ed9e734e",
+    "category" : "SecurityHeaders",
+    "severity" : "Low",
+    "endpoint" : "/",
+    "method" : "GET",
+    "description" : "Отсутствует заголовок X-Content-Type-Options",
+    "evidence" : "X-Content-Type-Options: <none>",
+    "impact" : "Пониженная защита браузера",
+    "recommendation" : "Добавить заголовок в ответы",
+    "traceRef" : "GET_https_vbank_open_bankingapi_ru__200_1761803518868.json"
+  }, {
+    "id" : "4b686660-5cfa-4159-b465-1aec532d99a4",
+    "category" : "SecurityHeaders",
+    "severity" : "Low",
+    "endpoint" : "/",
+    "method" : "GET",
+    "description" : "Отсутствует заголовок X-Frame-Options",
+    "evidence" : "X-Frame-Options: <none>",
+    "impact" : "Пониженная защита браузера",
+    "recommendation" : "Добавить заголовок в ответы",
+    "traceRef" : "GET_https_vbank_open_bankingapi_ru__200_1761803518876.json"
+  }, {
+    "id" : "84939fc5-b233-49eb-8baa-a453d6fc18ee",
+    "category" : "SecurityHeaders",
+    "severity" : "Low",
+    "endpoint" : "/",
+    "method" : "GET",
+    "description" : "Отсутствует заголовок Referrer-Policy",
+    "evidence" : "Referrer-Policy: <none>",
+    "impact" : "Пониженная защита браузера",
+    "recommendation" : "Добавить заголовок в ответы",
+    "traceRef" : "GET_https_vbank_open_bankingapi_ru__200_1761803518881.json"
+  }, {
+    "id" : "079a3178-f736-4c2a-a601-dd6a75af5e59",
+    "category" : "SecurityHeaders",
+    "severity" : "Low",
+    "endpoint" : "/",
+    "method" : "GET",
+    "description" : "Отсутствует заголовок Permissions-Policy",
+    "evidence" : "Permissions-Policy: <none>",
+    "impact" : "Пониженная защита браузера",
+    "recommendation" : "Добавить заголовок в ответы",
+    "traceRef" : "GET_https_vbank_open_bankingapi_ru__200_1761803518886.json"
+  }, {
+    "id" : "bebd1be0-1b0e-42cf-81e3-3ca4d0fdb354",
+    "category" : "SecurityHeaders",
+    "severity" : "Low",
+    "endpoint" : "/",
+    "method" : "GET",
+    "description" : "Отсутствует заголовок Cache-Control",
+    "evidence" : "Cache-Control: <none>",
+    "impact" : "Пониженная защита браузера",
+    "recommendation" : "Добавить заголовок в ответы",
+    "traceRef" : "GET_https_vbank_open_bankingapi_ru__200_1761803518892.json"
+  }, {
+    "id" : "bdb5aa59-57f8-4e01-8c7d-6f840161d2c3",
+    "category" : "CORS",
+    "severity" : "Medium",
+    "endpoint" : "/",
+    "method" : "GET",
+    "description" : "Отсутствует заголовок Access-Control-Allow-Origin",
+    "evidence" : "Access-Control-Allow-Origin: null",
+    "impact" : "Риск междоменного доступа к ресурсам",
+    "recommendation" : "Установить конкретные доверенные источники или явно пометить путь публичным",
+    "traceRef" : "GET_https_vbank_open_bankingapi_ru__200_1761803518988.json"
+  }, {
+    "id" : "b49abf3e-6384-4912-90bb-1017fa21c193",
+    "category" : "CORS",
+    "severity" : "Medium",
+    "endpoint" : "/status",
+    "method" : "GET",
+    "description" : "Отсутствует заголовок Access-Control-Allow-Origin",
+    "evidence" : "Access-Control-Allow-Origin: null",
+    "impact" : "Риск междоменного доступа к ресурсам",
+    "recommendation" : "Установить конкретные доверенные источники или явно пометить путь публичным",
+    "traceRef" : "GET_https_vbank_open_bankingapi_ru_status_404_1761803519119.json"
+  }, {
+    "id" : "5650aa69-261b-44a2-b10b-f2442831f2c7",
+    "category" : "CORS",
+    "severity" : "Medium",
+    "endpoint" : "/health",
+    "method" : "GET",
+    "description" : "Отсутствует заголовок Access-Control-Allow-Origin",
+    "evidence" : "Access-Control-Allow-Origin: null",
+    "impact" : "Риск междоменного доступа к ресурсам",
+    "recommendation" : "Установить конкретные доверенные источники или явно пометить путь публичным",
+    "traceRef" : "GET_https_vbank_open_bankingapi_ru_health_200_1761803519273.json"
+  }, {
+    "id" : "472b1f73-35e3-4532-89cd-9ccfdab5c933",
+    "category" : "MassAssignment",
+    "severity" : "High",
+    "endpoint" : "/auth/login",
+    "method" : "POST",
+    "description" : "Подозрение на mass assignment: сервер принял/отразил чувствительные поля",
+    "evidence" : "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"password\"],\"msg\":\"Field required\",\"input\":{\"username\":\"test\",\"isAdmin\":true,\"role\":\"admin\",\"balance\":1000000}}]}",
+    "impact" : "Повышение привилегий/модификация критичных атрибутов",
+    "recommendation" : "Явное белое‑списочное биндинг полей",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_login_422_1761803519979.json"
+  }, {
+    "id" : "9060f1e4-7eba-4ee8-8d65-bbc44443f449",
+    "category" : "RateLimit",
+    "severity" : "Low",
+    "endpoint" : "/auth/login",
+    "method" : "GET",
+    "description" : "Отсутствуют признаки ограничений по частоте запросов",
+    "evidence" : "Нет 429/RateLimit заголовков",
+    "impact" : "Риск перебора/брютфорса",
+    "recommendation" : "Ввести ограничения по частоте или капчу",
+    "traceRef" : "ratelimit-checked-5"
+  }, {
+    "id" : "9a0c67a5-2fb7-4760-9485-44aaa38c8ba9",
+    "category" : "HPP",
+    "severity" : "Low",
+    "endpoint" : "/auth/login",
+    "method" : "GET",
+    "description" : "Потенциальный HPP в заголовках (дубли X-Role)",
+    "evidence" : "X-Role: user, X-Role: admin",
+    "impact" : "Возможен обход логики при агрегации заголовков",
+    "recommendation" : "Отклонять/нормализовать дубли заголовков",
+    "traceRef" : "GET_https_vbank_open_bankingapi_ru_auth_login_405_1761803521795.json"
+  }, {
+    "id" : "b2b57d2f-eacd-4953-b828-3b1af8881320",
+    "category" : "HPP",
+    "severity" : "Low",
+    "endpoint" : "/auth/me",
+    "method" : "GET",
+    "description" : "Потенциальный HPP в заголовках (дубли X-Role)",
+    "evidence" : "X-Role: user, X-Role: admin",
+    "impact" : "Возможен обход логики при агрегации заголовков",
+    "recommendation" : "Отклонять/нормализовать дубли заголовков",
+    "traceRef" : "GET_https_vbank_open_bankingapi_ru_auth_me_401_1761803522415.json"
+  }, {
+    "id" : "7c028412-618d-4d7d-a0c0-52673ab0c38d",
+    "category" : "HPP",
+    "severity" : "Low",
+    "endpoint" : "/auth/bank-token",
+    "method" : "GET",
+    "description" : "Потенциальный HPP в заголовках (дубли X-Role)",
+    "evidence" : "X-Role: user, X-Role: admin",
+    "impact" : "Возможен обход логики при агрегации заголовков",
+    "recommendation" : "Отклонять/нормализовать дубли заголовков",
+    "traceRef" : "GET_https_vbank_open_bankingapi_ru_auth_bank_token_405_1761803523045.json"
+  }, {
+    "id" : "9b3bf88f-fdef-483f-8ef2-d6d8fd672aa7",
+    "category" : "HPP",
+    "severity" : "Low",
+    "endpoint" : "/auth/banker-login",
+    "method" : "GET",
+    "description" : "Потенциальный HPP в заголовках (дубли X-Role)",
+    "evidence" : "X-Role: user, X-Role: admin",
+    "impact" : "Возможен обход логики при агрегации заголовков",
+    "recommendation" : "Отклонять/нормализовать дубли заголовков",
+    "traceRef" : "GET_https_vbank_open_bankingapi_ru_auth_banker_login_405_1761803524188.json"
+  }, {
+    "id" : "af874fd7-8475-47b5-af00-16aaf6d8c31f",
+    "category" : "HPP",
+    "severity" : "Low",
+    "endpoint" : "/auth/random-demo-client",
+    "method" : "GET",
+    "description" : "Потенциальный HPP в заголовках (дубли X-Role)",
+    "evidence" : "X-Role: user, X-Role: admin",
+    "impact" : "Возможен обход логики при агрегации заголовков",
+    "recommendation" : "Отклонять/нормализовать дубли заголовков",
+    "traceRef" : "GET_https_vbank_open_bankingapi_ru_auth_random_demo_client_200_1761803524845.json"
+  }, {
+    "id" : "1129e123-30fb-477d-bbbb-19b10620967c",
+    "category" : "HPP",
+    "severity" : "Low",
+    "endpoint" : "/accounts",
+    "method" : "GET",
+    "description" : "Потенциальный HPP в заголовках (дубли X-Role)",
+    "evidence" : "X-Role: user, X-Role: admin",
+    "impact" : "Возможен обход логики при агрегации заголовков",
+    "recommendation" : "Отклонять/нормализовать дубли заголовков",
+    "traceRef" : "GET_https_vbank_open_bankingapi_ru_accounts_401_1761803525476.json"
+  }, {
+    "id" : "717ab990-6ec2-4325-99df-9d925a4c2e7b",
+    "category" : "RateLimit",
+    "severity" : "High",
+    "endpoint" : "/accounts/{account_id}",
+    "method" : "GET",
+    "description" : "Деградация/ошибки на больших выборках (429/5xx)",
+    "evidence" : "t50=128ms, t500=127ms, t5000=127ms, code5000=500",
+    "impact" : "Риск DoS/перегрузки и утечка ресурсов на больших лимитах",
+    "recommendation" : "Ограничить max limit/size, внедрить защиту/страничную пагинацию",
+    "traceRef" : "GET_https_vbank_open_bankingapi_ru_accounts_account_id_limit_5000_page_1_size_5000_500_1761803526293.json"
+  }, {
+    "id" : "c0beecdd-339b-4e43-ad67-54c6289d83f1",
+    "category" : "RateLimit",
+    "severity" : "High",
+    "endpoint" : "/accounts/{account_id}/balances",
+    "method" : "GET",
+    "description" : "Деградация/ошибки на больших выборках (429/5xx)",
+    "evidence" : "t50=127ms, t500=126ms, t5000=125ms, code5000=500",
+    "impact" : "Риск DoS/перегрузки и утечка ресурсов на больших лимитах",
+    "recommendation" : "Ограничить max limit/size, внедрить защиту/страничную пагинацию",
+    "traceRef" : "GET_https_vbank_open_bankingapi_ru_accounts_account_id_balances_limit_5000_page_1_size_5000_500_1761803526679.json"
+  }, {
+    "id" : "58971104-e9a8-4595-8383-499f99c4b03b",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/login",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через X-HTTP-Method-Override",
+    "evidence" : "GET=405, POST+X-HTTP-Method-Override=DELETE => 422",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_login_422_1761803529155.json"
+  }, {
+    "id" : "342a9122-75e4-4507-8aa8-ff780042a925",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/login",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через _method=query",
+    "evidence" : "GET=405, POST+_method=query=DELETE => 422",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_login_method_DELETE_422_1761803529285.json"
+  }, {
+    "id" : "6a9ccbda-98c9-4d32-a500-1caed7851982",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/login",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через X-Original-Method",
+    "evidence" : "GET=405, POST+X-Original-Method=DELETE => 422",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_login_422_1761803529413.json"
+  }, {
+    "id" : "477b1331-a52d-4bad-bc51-acf59e402956",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/login",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через X-HTTP-Method",
+    "evidence" : "GET=405, POST+X-HTTP-Method=DELETE => 422",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_login_422_1761803529547.json"
+  }, {
+    "id" : "c1721aa7-a2b4-405e-bf5c-3a63a13d2d65",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/login",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через X-Method-Override",
+    "evidence" : "GET=405, POST+X-Method-Override=DELETE => 422",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_login_422_1761803529671.json"
+  }, {
+    "id" : "96887e3d-c4c2-431a-a6dc-e45bb3c32087",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/login",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через _method=form",
+    "evidence" : "GET=405, POST+_method=form=DELETE => 422",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_login_422_1761803529797.json"
+  }, {
+    "id" : "81fe010b-3400-451e-867c-0f93120bcd7a",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/me",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через X-HTTP-Method-Override",
+    "evidence" : "GET=401, POST+X-HTTP-Method-Override=DELETE => 405",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_me_405_1761803530043.json"
+  }, {
+    "id" : "d8e083d3-317b-4de2-a79d-06bf4b7a1104",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/me",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через _method=query",
+    "evidence" : "GET=401, POST+_method=query=DELETE => 405",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_me_method_DELETE_405_1761803530169.json"
+  }, {
+    "id" : "8111ee9e-f0d9-4f72-aa83-73d676e7d078",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/me",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через X-Original-Method",
+    "evidence" : "GET=401, POST+X-Original-Method=DELETE => 405",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_me_405_1761803530296.json"
+  }, {
+    "id" : "bb04a755-daec-4eac-aa83-038c5c4bd6d1",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/me",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через X-HTTP-Method",
+    "evidence" : "GET=401, POST+X-HTTP-Method=DELETE => 405",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_me_405_1761803530421.json"
+  }, {
+    "id" : "cd514779-7034-48aa-bfbd-8309ccb07fd4",
+    "category" : "IDOR",
+    "severity" : "High",
+    "endpoint" : "/accounts/{account_id}",
+    "method" : "GET",
+    "description" : "Подтверждённый IDOR/BOLA: доступ к чужому ресурсу возможен",
+    "evidence" : "GET /accounts/1 => 200",
+    "impact" : "Несанкционированный доступ к чужим данным",
+    "recommendation" : "Проверка владения ресурсом и авторизация на уровне ресурса",
+    "traceRef" : "GET_https_vbank_open_bankingapi_ru_accounts_1_200_1761803530511.json"
+  }, {
+    "id" : "23e9fff0-0ac4-476c-b46f-e449fd52c731",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/me",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через X-Method-Override",
+    "evidence" : "GET=401, POST+X-Method-Override=DELETE => 405",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_me_405_1761803530546.json"
+  }, {
+    "id" : "ea82e903-cb09-4b27-bff7-416ac7353bbe",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/me",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через _method=form",
+    "evidence" : "GET=401, POST+_method=form=DELETE => 405",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_me_405_1761803530670.json"
+  }, {
+    "id" : "29adc4de-ded6-4ae9-848c-14f7b9eddeaa",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/bank-token",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через X-HTTP-Method-Override",
+    "evidence" : "GET=405, POST+X-HTTP-Method-Override=DELETE => 422",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_bank_token_422_1761803530918.json"
+  }, {
+    "id" : "adcce6be-4e54-4ab6-9795-c7fcab5c5950",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/bank-token",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через _method=query",
+    "evidence" : "GET=405, POST+_method=query=DELETE => 422",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_bank_token_method_DELETE_422_1761803531048.json"
+  }, {
+    "id" : "4ef223d1-0792-4343-9e5e-be310dd4fd2e",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/bank-token",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через X-Original-Method",
+    "evidence" : "GET=405, POST+X-Original-Method=DELETE => 422",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_bank_token_422_1761803531188.json"
+  }, {
+    "id" : "0f6185fc-aabf-4d21-ac5f-a2157b73cecb",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/bank-token",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через X-HTTP-Method",
+    "evidence" : "GET=405, POST+X-HTTP-Method=DELETE => 422",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_bank_token_422_1761803531323.json"
+  }, {
+    "id" : "aad5ecec-71d0-493a-adf1-b84cbda17af8",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/bank-token",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через X-Method-Override",
+    "evidence" : "GET=405, POST+X-Method-Override=DELETE => 422",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_bank_token_422_1761803531462.json"
+  }, {
+    "id" : "e07d41b7-133e-4854-b741-aeea6426460b",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/bank-token",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через _method=form",
+    "evidence" : "GET=405, POST+_method=form=DELETE => 422",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_bank_token_422_1761803531588.json"
+  }, {
+    "id" : "a067a5ff-e3af-4291-80ce-52f1197abe7a",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/banker-login",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через X-HTTP-Method-Override",
+    "evidence" : "GET=405, POST+X-HTTP-Method-Override=DELETE => 422",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_banker_login_422_1761803531842.json"
+  }, {
+    "id" : "0056683d-84cb-4a5f-851f-825bd1181ad0",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/banker-login",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через _method=query",
+    "evidence" : "GET=405, POST+_method=query=DELETE => 422",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_banker_login_method_DELETE_422_1761803531976.json"
+  }, {
+    "id" : "c357b1ca-25a1-4c34-97c8-a2e4654d4a4a",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/banker-login",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через X-Original-Method",
+    "evidence" : "GET=405, POST+X-Original-Method=DELETE => 422",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_banker_login_422_1761803532102.json"
+  }, {
+    "id" : "f2b8d44d-e7a6-421f-84f2-e7061682d209",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/banker-login",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через X-HTTP-Method",
+    "evidence" : "GET=405, POST+X-HTTP-Method=DELETE => 422",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_banker_login_422_1761803532229.json"
+  }, {
+    "id" : "6144eab1-3e2a-41e1-8cf6-86956dee6e7d",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/banker-login",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через X-Method-Override",
+    "evidence" : "GET=405, POST+X-Method-Override=DELETE => 422",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_banker_login_422_1761803532356.json"
+  }, {
+    "id" : "7246255c-039e-4682-ba3e-12e22bc9a7e2",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/banker-login",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через _method=form",
+    "evidence" : "GET=405, POST+_method=form=DELETE => 422",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_banker_login_422_1761803532485.json"
+  }, {
+    "id" : "583c6dc0-d963-4265-a699-50174f2c0bd4",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/random-demo-client",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через X-HTTP-Method-Override",
+    "evidence" : "GET=200, POST+X-HTTP-Method-Override=DELETE => 405",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_random_demo_client_405_1761803532733.json"
+  }, {
+    "id" : "7acf78ca-070f-49c1-9cc3-2398f9790a70",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/random-demo-client",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через _method=query",
+    "evidence" : "GET=200, POST+_method=query=DELETE => 405",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_random_demo_client_method_DELETE_405_1761803532858.json"
+  }, {
+    "id" : "26fb7598-c1c4-4901-aae6-0f33ada081d0",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/random-demo-client",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через X-Original-Method",
+    "evidence" : "GET=200, POST+X-Original-Method=DELETE => 405",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_random_demo_client_405_1761803532983.json"
+  }, {
+    "id" : "68dd43c0-0931-4fb7-a4ce-6050a8e9df11",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/random-demo-client",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через X-HTTP-Method",
+    "evidence" : "GET=200, POST+X-HTTP-Method=DELETE => 405",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_random_demo_client_405_1761803533113.json"
+  }, {
+    "id" : "9d9f035d-52fc-465d-973e-420bac06d85e",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/random-demo-client",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через X-Method-Override",
+    "evidence" : "GET=200, POST+X-Method-Override=DELETE => 405",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_random_demo_client_405_1761803533238.json"
+  }, {
+    "id" : "ba8274a0-8b10-40b3-ac01-f2f9d3a1309a",
+    "category" : "MethodOverride",
+    "severity" : "Medium",
+    "endpoint" : "/auth/random-demo-client",
+    "method" : "POST",
+    "description" : "Небезопасный метод-override через _method=form",
+    "evidence" : "GET=200, POST+_method=form=DELETE => 405",
+    "impact" : "Возможен обход контроля методов/авторизации",
+    "recommendation" : "Отключить/валидировать method override и применять явный список",
+    "traceRef" : "POST_https_vbank_open_bankingapi_ru_auth_random_demo_client_405_1761803533363.json"
+  }, {
+    "id" : "2af4590e-f254-4f54-b2d1-111f4e909844",
+    "category" : "IDOR",
+    "severity" : "High",
+    "endpoint" : "/accounts/{account_id}/balances",
+    "method" : "GET",
+    "description" : "Подтверждённый IDOR/BOLA: доступ к чужому ресурсу возможен",
+    "evidence" : "GET /accounts/1/balances => 200",
+    "impact" : "Несанкционированный доступ к чужим данным",
+    "recommendation" : "Проверка владения ресурсом и авторизация на уровне ресурса",
+    "traceRef" : "GET_https_vbank_open_bankingapi_ru_accounts_1_balances_200_1761803536838.json"
+  } ],
+  "telemetry" : {
+    "requestsTotal" : 65,
+    "avgLatencyMs" : 211.04615384615386,
+    "contractMismatchRate" : 0.5692307692307692,
+    "vulnCounts" : {
+      "RateLimit" : 3,
+      "SecurityHeaders" : 5,
+      "CORS" : 4,
+      "MassAssignment" : 1,
+      "HPP" : 6,
+      "IDOR" : 2,
+      "MethodOverride" : 30
+    },
+    "scannerAttempts" : {
+      "RateLimit" : 2,
+      "SecurityHeaders" : 1,
+      "ExcessiveData" : 1,
+      "CORS" : 1,
+      "MassAssignment" : 1,
+      "WeakAuth" : 1,
+      "BFLA" : 1,
+      "HPP" : 1,
+      "Injection" : 1,
+      "IDOR" : 1,
+      "MethodOverride" : 1,
+      "VerboseErrors" : 1
+    },
+    "scannerDurMs" : {
+      "RateLimit" : 8454,
+      "SecurityHeaders" : 183,
+      "ExcessiveData" : 10050,
+      "CORS" : 581,
+      "MassAssignment" : 302,
+      "WeakAuth" : 1139,
+      "BFLA" : 1192,
+      "HPP" : 5454,
+      "Injection" : 18150,
+      "IDOR" : 18064,
+      "MethodOverride" : 8729,
+      "VerboseErrors" : 9351
+    },
+    "presetParams" : {
+      "rateBurst" : 5,
+      "idorMax" : 2,
+      "injectionOps" : 6,
+      "operationsPlanned" : 65
+    }
+  }
+}

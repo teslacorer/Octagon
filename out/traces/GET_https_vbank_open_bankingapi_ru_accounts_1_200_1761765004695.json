@@ -1,0 +1,17 @@
+{
+  "url" : "https://vbank.open.bankingapi.ru/accounts/1",
+  "method" : "GET",
+  "requestHeaders" : {
+    "Authorization" : "***"
+  },
+  "status" : 200,
+  "responseHeaders" : {
+    "content-length" : "224",
+    "content-security-policy" : "upgrade-insecure-requests",
+    "content-type" : "application/json",
+    "date" : "Wed, 29 Oct 2025 19:10:01 GMT",
+    "server" : "nginx/***",
+    "strict-transport-security" : "max-age=63072000; includeSubDomains; preload"
+  },
+  "responseBody" : "{\"data\":{\"account\":[{\"accountId\":\"acc-1\",\"status\":\"Enabled\",\"currency\":\"RUB\",\"accountType\":\"Personal\",\"accountSubType\":\"Checking\",\"description\":\"checking account\",\"nickname\":\"Checking счет\",\"openingDate\":\"2025-10-25\"}]}}"
+}

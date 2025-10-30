@@ -1,0 +1,19 @@
+{
+  "url" : "https://vbank.open.bankingapi.ru/account-consents/%7Bconsent_id%7D",
+  "method" : "POST",
+  "requestHeaders" : {
+    "Authorization" : "***",
+    "X-Method-Override" : "DELETE"
+  },
+  "status" : 405,
+  "responseHeaders" : {
+    "allow" : "GET",
+    "content-length" : "31",
+    "content-security-policy" : "upgrade-insecure-requests",
+    "content-type" : "application/json",
+    "date" : "Thu, 30 Oct 2025 07:14:28 GMT",
+    "server" : "nginx/***",
+    "strict-transport-security" : "max-age=63072000; includeSubDomains; preload"
+  },
+  "responseBody" : "{\"detail\":\"Method Not Allowed\"}"
+}

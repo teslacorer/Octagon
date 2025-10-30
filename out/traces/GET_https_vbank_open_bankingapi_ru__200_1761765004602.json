@@ -1,0 +1,17 @@
+{
+  "url" : "https://vbank.open.bankingapi.ru/",
+  "method" : "GET",
+  "requestHeaders" : {
+    "Authorization" : "***"
+  },
+  "status" : 200,
+  "responseHeaders" : {
+    "content-length" : "81",
+    "content-security-policy" : "upgrade-insecure-requests",
+    "content-type" : "application/json",
+    "date" : "Wed, 29 Oct 2025 19:10:01 GMT",
+    "server" : "nginx/***",
+    "strict-transport-security" : "max-age=63072000; includeSubDomains; preload"
+  },
+  "responseBody" : "{\"bank\":\"Virtual Bank\",\"bank_code\":\"vbank\",\"api_version\":\"2.1\",\"status\":\"online\"}"
+}

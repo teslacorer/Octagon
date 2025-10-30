@@ -1,0 +1,15 @@
+ru/apidefender/core/report/ReportModel$Meta.class
+ru/apidefender/core/report/ReportModel$ContractMismatch.class
+ru/apidefender/core/http/HttpClient.class
+ru/apidefender/core/report/ReportModel$Undocumented.class
+ru/apidefender/core/report/ReportModel$Telemetry.class
+ru/apidefender/core/report/ReportModel$Contract.class
+ru/apidefender/core/log/JsonlLogger.class
+ru/apidefender/core/openapi/OpenApiLoader.class
+ru/apidefender/core/Config.class
+ru/apidefender/core/Config$LogLevel.class
+ru/apidefender/core/report/ReportModel.class
+ru/apidefender/core/Config$Preset.class
+ru/apidefender/core/openapi/OpenApiLoader$LoadedSpec.class
+ru/apidefender/core/report/ReportModel$SecurityIssue.class
+ru/apidefender/core/http/Masking.class

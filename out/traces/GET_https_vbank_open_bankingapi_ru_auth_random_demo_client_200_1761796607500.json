@@ -1,0 +1,15 @@
+{
+  "url" : "https://vbank.open.bankingapi.ru/auth/random-demo-client",
+  "method" : "GET",
+  "requestHeaders" : { },
+  "status" : 200,
+  "responseHeaders" : {
+    "content-length" : "82",
+    "content-security-policy" : "upgrade-insecure-requests",
+    "content-type" : "application/json",
+    "date" : "Thu, 30 Oct 2025 03:56:47 GMT",
+    "server" : "nginx/***",
+    "strict-transport-security" : "max-age=63072000; includeSubDomains; preload"
+  },
+  "responseBody" : "{\"person_id\":\"demo-003\",\"full_name\":\"Демо Клиент 003\",\"password\":\"demo\"}"
+}

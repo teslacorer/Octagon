@@ -1,0 +1,17 @@
+{
+  "url" : "https://vbank.open.bankingapi.ru/product-offers/{offer_id}",
+  "method" : "DELETE",
+  "requestHeaders" : {
+    "Authorization" : "***"
+  },
+  "status" : 404,
+  "responseHeaders" : {
+    "content-length" : "36",
+    "content-security-policy" : "upgrade-insecure-requests",
+    "content-type" : "application/json",
+    "date" : "Thu, 30 Oct 2025 06:14:01 GMT",
+    "server" : "nginx/***",
+    "strict-transport-security" : "max-age=63072000; includeSubDomains; preload"
+  },
+  "responseBody" : "{\"detail\":\"Product offer not found\"}"
+}

@@ -1,0 +1,17 @@
+{
+  "url" : "https://vbank.open.bankingapi.ru/payments/v1",
+  "method" : "GET",
+  "requestHeaders" : {
+    "Authorization" : "***"
+  },
+  "status" : 401,
+  "responseHeaders" : {
+    "content-length" : "43",
+    "content-security-policy" : "upgrade-insecure-requests",
+    "content-type" : "application/json",
+    "date" : "Thu, 30 Oct 2025 07:14:02 GMT",
+    "server" : "nginx/***",
+    "strict-transport-security" : "max-age=63072000; includeSubDomains; preload"
+  },
+  "responseBody" : "{\"detail\":\"Could not validate credentials\"}"
+}

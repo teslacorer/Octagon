@@ -1,0 +1,17 @@
+{
+  "url" : "https://vbank.open.bankingapi.ru/account-consents/req-2a1f6d38f606",
+  "method" : "GET",
+  "requestHeaders" : {
+    "Authorization" : "***"
+  },
+  "status" : 200,
+  "responseHeaders" : {
+    "content-length" : "361",
+    "content-security-policy" : "upgrade-insecure-requests",
+    "content-type" : "application/json",
+    "date" : "Thu, 30 Oct 2025 06:42:18 GMT",
+    "server" : "nginx/***",
+    "strict-transport-security" : "max-age=63072000; includeSubDomains; preload"
+  },
+  "responseBody" : "{\"data\":{\"consentId\":\"consent-ec33839fe434\",\"status\":\"Authorized\",\"creationDateTime\":\"2025-10-30T05:04:56.534602Z\",\"statusUpdateDateTime\":\"2025-10-30T05:04:56.534603Z\",\"permissions\":[\"ReadAccountsDetail\",\"ReadBalances\",\"ReadTransactionsDetail\"],\"expirationDateTime\":\"2026-10-30T05:04:56.534595Z\"},\"links\":{\"self\":\"/account-consents/req-2a1f6d38f606\"},\"meta\":{}}"
+}

@@ -1,0 +1,19 @@
+{
+  "url" : "https://vbank.open.bankingapi.ru/accounts/{account_id}/balances",
+  "method" : "POST",
+  "requestHeaders" : {
+    "Authorization" : "***",
+    "X-HTTP-Method-Override" : "DELETE"
+  },
+  "status" : 405,
+  "responseHeaders" : {
+    "allow" : "GET",
+    "content-length" : "31",
+    "content-security-policy" : "upgrade-insecure-requests",
+    "content-type" : "application/json",
+    "date" : "Wed, 29 Oct 2025 19:10:06 GMT",
+    "server" : "nginx/***",
+    "strict-transport-security" : "max-age=63072000; includeSubDomains; preload"
+  },
+  "responseBody" : "{\"detail\":\"Method Not Allowed\"}"
+}

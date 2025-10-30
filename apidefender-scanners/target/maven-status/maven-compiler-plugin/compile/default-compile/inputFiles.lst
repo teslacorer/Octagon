@@ -1,0 +1,10 @@
+/src/apidefender-scanners/src/main/java/ru/apidefender/scanners/simple/CorsHeadersScanner.java
+/src/apidefender-scanners/src/main/java/ru/apidefender/scanners/SPI.java
+/src/apidefender-scanners/src/main/java/ru/apidefender/scanners/owasp/MassAssignmentScanner.java
+/src/apidefender-scanners/src/main/java/ru/apidefender/scanners/owasp/WeakAuthScanner.java
+/src/apidefender-scanners/src/main/java/ru/apidefender/scanners/simple/SecurityHeadersScanner.java
+/src/apidefender-scanners/src/main/java/ru/apidefender/scanners/owasp/InjectionScanner.java
+/src/apidefender-scanners/src/main/java/ru/apidefender/scanners/owasp/VerboseErrorsScanner.java
+/src/apidefender-scanners/src/main/java/ru/apidefender/scanners/owasp/RateLimitScanner.java
+/src/apidefender-scanners/src/main/java/ru/apidefender/scanners/owasp/ExcessiveDataScanner.java
+/src/apidefender-scanners/src/main/java/ru/apidefender/scanners/owasp/BolaIdorScanner.java

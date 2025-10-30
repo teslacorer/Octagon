@@ -1,0 +1,17 @@
+{
+  "url" : "https://vbank.open.bankingapi.ru/account-consents/request?_method=DELETE",
+  "method" : "POST",
+  "requestHeaders" : {
+    "Authorization" : "***"
+  },
+  "status" : 422,
+  "responseHeaders" : {
+    "content-length" : "82",
+    "content-security-policy" : "upgrade-insecure-requests",
+    "content-type" : "application/json",
+    "date" : "Wed, 29 Oct 2025 19:16:21 GMT",
+    "server" : "nginx/***",
+    "strict-transport-security" : "max-age=63072000; includeSubDomains; preload"
+  },
+  "responseBody" : "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\"],\"msg\":\"Field required\",\"input\":null}]}"
+}

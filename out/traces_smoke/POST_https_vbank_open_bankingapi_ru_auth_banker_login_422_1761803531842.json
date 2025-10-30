@@ -1,0 +1,18 @@
+{
+  "url" : "https://vbank.open.bankingapi.ru/auth/banker-login",
+  "method" : "POST",
+  "requestHeaders" : {
+    "Authorization" : "***",
+    "X-HTTP-Method-Override" : "DELETE"
+  },
+  "status" : 422,
+  "responseHeaders" : {
+    "content-length" : "174",
+    "content-security-policy" : "upgrade-insecure-requests",
+    "content-type" : "application/json",
+    "date" : "Thu, 30 Oct 2025 05:52:11 GMT",
+    "server" : "nginx/***",
+    "strict-transport-security" : "max-age=63072000; includeSubDomains; preload"
+  },
+  "responseBody" : "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"username\"],\"msg\":\"Field required\",\"input\":null},{\"type\":\"missing\",\"loc\":[\"body\",\"password\"],\"msg\":\"Field required\",\"input\":null}]}"
+}

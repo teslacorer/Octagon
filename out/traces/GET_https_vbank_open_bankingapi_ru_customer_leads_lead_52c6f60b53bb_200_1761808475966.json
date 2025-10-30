@@ -1,0 +1,17 @@
+{
+  "url" : "https://vbank.open.bankingapi.ru/customer-leads/lead-52c6f60b53bb",
+  "method" : "GET",
+  "requestHeaders" : {
+    "Authorization" : "***"
+  },
+  "status" : 200,
+  "responseHeaders" : {
+    "content-length" : "417",
+    "content-security-policy" : "upgrade-insecure-requests",
+    "content-type" : "application/json",
+    "date" : "Thu, 30 Oct 2025 07:14:35 GMT",
+    "server" : "nginx/***",
+    "strict-transport-security" : "max-age=63072000; includeSubDomains; preload"
+  },
+  "responseBody" : "{\"data\":{\"customer_lead_id\":\"lead-52c6f60b53bb\",\"full_name\":\"Сидоров Иван Петрович\",\"phone\":\"+79811945034\",\"email\":\"sidorov@mail.ru\",\"interested_products\":[\"prod-vb-deposit-001\"],\"source\":\"api\",\"status\":\"pending\",\"estimated_income\":500000.0,\"notes\":\"string\",\"created_at\":\"2025-10-29T17:12:27.294871Z\",\"updated_at\":\"2025-10-29T17:12:27.294873Z\"},\"links\":{\"self\":\"/customer-leads/lead-52c6f60b53bb\"}}"
+}

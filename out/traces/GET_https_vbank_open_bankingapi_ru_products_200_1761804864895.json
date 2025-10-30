@@ -1,0 +1,18 @@
+{
+  "url" : "https://vbank.open.bankingapi.ru/products",
+  "method" : "GET",
+  "requestHeaders" : {
+    "Authorization" : "***",
+    "X-Role" : "admin"
+  },
+  "status" : 200,
+  "responseHeaders" : {
+    "content-length" : "920",
+    "content-security-policy" : "upgrade-insecure-requests",
+    "content-type" : "application/json",
+    "date" : "Thu, 30 Oct 2025 06:14:24 GMT",
+    "server" : "nginx/***",
+    "strict-transport-security" : "max-age=63072000; includeSubDomains; preload"
+  },
+  "responseBody" : "{\"data\":{\"product\":[{\"productId\":\"prod-vb-deposit-001\",\"productType\":\"deposit\",\"productName\":\"Накопительный депозит\",\"description\":\"Ставка 8.5% годовых\",\"interestRate\":\"8.50\",\"minAmount\":\"50000.00\",\"maxAmount\":null,\"termMonths\":12},{\"productId\":\"prod-vb-card-001\",\"productType\":\"credit_card\",\"productName\":\"Кредитная карта Premium\",\"description\":\"Ставка 15.9%, кэшбэк 5%\",\"interestRate\":\"15.90\",\"minAmount\":null,\"maxAmount\":null,\"termMonths\":null},{\"productId\":\"prod-vb-loan-001\",\"productType\":\"loan\",\"productName\":\"Потребительский кредит\",\"description\":\"Ставка 12.9% годовых\",\"interestRate\":\"12.90\",\"minAmount\":\"50000.00\",\"maxAmount\":null,\"termMonths\":36},{\"productId\":\"prod-ded356e4bcd6\",\"productType\":\"123\",\"productName\":\"123\",\"description\":null,\"interestRate\":\"12.00\",\"minAmount\":null,\"maxAmount\":null,\"termMonths\":null}]}}"
+}

@@ -1,0 +1,225 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "API Defender Report",
+  "type": "object",
+  "required": [
+    "meta",
+    "contract",
+    "security",
+    "telemetry"
+  ],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": [
+        "startedAt",
+        "finishedAt",
+        "durationMs",
+        "preset",
+        "target",
+        "openapiVersion",
+        "endpointsScanned"
+      ],
+      "properties": {
+        "startedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "finishedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "durationMs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "preset": {
+          "type": "string",
+          "enum": [
+            "fast",
+            "full",
+            "aggressive"
+          ]
+        },
+        "target": {
+          "type": "string"
+        },
+        "openapiVersion": {
+          "type": "string"
+        },
+        "endpointsScanned": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "contract": {
+      "type": "object",
+      "required": [
+        "mismatches",
+        "undocumented"
+      ],
+      "properties": {
+        "mismatches": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "endpoint",
+              "method",
+              "issue",
+              "evidence",
+              "traceRef"
+            ],
+            "properties": {
+              "endpoint": {
+                "type": "string"
+              },
+              "method": {
+                "type": "string"
+              },
+              "issue": {
+                "type": "string"
+              },
+              "evidence": {
+                "type": "string"
+              },
+              "traceRef": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "undocumented": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "path",
+              "method",
+              "status",
+              "evidence",
+              "traceRef"
+            ],
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "method": {
+                "type": "string"
+              },
+              "status": {
+                "type": "integer"
+              },
+              "evidence": {
+                "type": "string"
+              },
+              "traceRef": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "security": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "category",
+          "severity",
+          "endpoint",
+          "method",
+          "description",
+          "evidence",
+          "impact",
+          "recommendation",
+          "traceRef"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "BOLA",
+              "IDOR",
+              "Injection",
+              "WeakAuth",
+              "ExcessiveData",
+              "CORS",
+              "SecurityHeaders",
+              "RateLimit",
+              "MassAssignment",
+              "VerboseErrors"
+            ]
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "Low",
+              "Medium",
+              "High",
+              "Critical"
+            ]
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "method": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "evidence": {
+            "type": "string"
+          },
+          "impact": {
+            "type": "string"
+          },
+          "recommendation": {
+            "type": "string"
+          },
+          "traceRef": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "telemetry": {
+      "type": "object",
+      "required": [
+        "requestsTotal",
+        "avgLatencyMs",
+        "contractMismatchRate",
+        "vulnCounts"
+      ],
+      "properties": {
+        "requestsTotal": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "avgLatencyMs": {
+          "type": "number",
+          "minimum": 0
+        },
+        "contractMismatchRate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "vulnCounts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  }
+}

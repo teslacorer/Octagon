@@ -1,0 +1,19 @@
+{
+  "url" : "https://vbank.open.bankingapi.ru/product-application/%7Bapplication_id%7D",
+  "method" : "POST",
+  "requestHeaders" : {
+    "Authorization" : "***",
+    "Content-Type" : "application/x-www-form-urlencoded"
+  },
+  "status" : 405,
+  "responseHeaders" : {
+    "allow" : "GET",
+    "content-length" : "31",
+    "content-security-policy" : "upgrade-insecure-requests",
+    "content-type" : "application/json",
+    "date" : "Thu, 30 Oct 2025 06:42:29 GMT",
+    "server" : "nginx/***",
+    "strict-transport-security" : "max-age=63072000; includeSubDomains; preload"
+  },
+  "responseBody" : "{\"detail\":\"Method Not Allowed\"}"
+}

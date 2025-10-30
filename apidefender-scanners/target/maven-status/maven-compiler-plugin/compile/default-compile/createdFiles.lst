@@ -1,0 +1,11 @@
+ru/apidefender/scanners/owasp/VerboseErrorsScanner.class
+ru/apidefender/scanners/owasp/BolaIdorScanner.class
+ru/apidefender/scanners/SPI$ScanContext.class
+ru/apidefender/scanners/simple/CorsHeadersScanner.class
+ru/apidefender/scanners/simple/SecurityHeadersScanner.class
+ru/apidefender/scanners/SPI.class
+ru/apidefender/scanners/owasp/ExcessiveDataScanner.class
+ru/apidefender/scanners/owasp/WeakAuthScanner.class
+ru/apidefender/scanners/owasp/RateLimitScanner.class
+ru/apidefender/scanners/owasp/InjectionScanner.class
+ru/apidefender/scanners/owasp/MassAssignmentScanner.class

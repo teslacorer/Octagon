@@ -1,0 +1,19 @@
+{
+  "url" : "https://vbank.open.bankingapi.ru/auth/login",
+  "method" : "POST",
+  "requestHeaders" : {
+    "Authorization" : "***",
+    "Content-Type" : "application/json"
+  },
+  "requestBody" : "{\"username\":\"test\",\"isAdmin\":true,\"role\":\"admin\",\"balance\":1000000}",
+  "status" : 422,
+  "responseHeaders" : {
+    "content-length" : "156",
+    "content-security-policy" : "upgrade-insecure-requests",
+    "content-type" : "application/json",
+    "date" : "Wed, 29 Oct 2025 18:39:46 GMT",
+    "server" : "nginx/***",
+    "strict-transport-security" : "max-age=63072000; includeSubDomains; preload"
+  },
+  "responseBody" : "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"password\"],\"msg\":\"Field required\",\"input\":{\"username\":\"test\",\"isAdmin\":true,\"role\":\"admin\",\"balance\":1000000}}]}"
+}
