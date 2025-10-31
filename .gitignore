@@ -8,6 +8,7 @@ out/
 
 # Build artifacts
 apidefender_prompts_bundle.zip
+apidefender_prompts_bundle
 apidefender-*.jar
 target/
 **/target/
