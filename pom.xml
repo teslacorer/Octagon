@@ -27,7 +27,6 @@
         <module>apidefender-scanners</module>
         <module>apidefender-reporting</module>
         <module>apidefender-cli</module>
-        <module>apidefender-gui-server</module>
     </modules>
 
     <dependencyManagement>
@@ -62,6 +61,7 @@
         </pluginManagement>
     </build>
 </project>
+
 
 
 
