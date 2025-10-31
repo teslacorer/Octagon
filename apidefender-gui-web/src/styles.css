@@ -1,0 +1,4 @@
+﻿* { box-sizing: border-box }
+html, body, #root { height: 100% }
+body { margin: 0; background: #fafafa; color: #111827 }
+code, pre { font-family: ui-monospace, SFMono-Regular, Menlo }

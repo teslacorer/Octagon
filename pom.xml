@@ -1,4 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+﻿<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.apidefender</groupId>
@@ -7,7 +7,7 @@
     <packaging>pom</packaging>
 
     <name>API Defender Parent</name>
-    <description>Мульти-модульный проект API Defender</description>
+    <description>РњСѓР»СЊС‚Рё-РјРѕРґСѓР»СЊРЅС‹Р№ РїСЂРѕРµРєС‚ API Defender</description>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -22,11 +22,12 @@
         <junit.version>5.10.2</junit.version>
     </properties>
 
-    <modules>
+        <modules>
         <module>apidefender-core</module>
         <module>apidefender-scanners</module>
         <module>apidefender-reporting</module>
         <module>apidefender-cli</module>
+        <module>apidefender-gui-server</module>
     </modules>
 
     <dependencyManagement>
@@ -61,4 +62,8 @@
         </pluginManagement>
     </build>
 </project>
+
+
+
+
 
