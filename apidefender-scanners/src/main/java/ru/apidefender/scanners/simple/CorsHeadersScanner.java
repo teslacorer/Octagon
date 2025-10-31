@@ -1,8 +1,6 @@
 package ru.apidefender.scanners.simple;
 
-import okhttp3.Request;
 import okhttp3.Response;
-import ru.apidefender.core.http.HttpClient;
 import ru.apidefender.core.report.ReportModel;
 import ru.apidefender.scanners.SPI;
 
@@ -10,7 +8,10 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public class CorsHeadersScanner implements SPI {
-    @Override public String getCategory() { return "CORS"; }
+    @Override
+    public String getCategory() {
+        return "CORS";
+    }
 
     @Override
     public CompletableFuture<Void> run(ScanContext ctx) {
@@ -20,7 +21,12 @@ public class CorsHeadersScanner implements SPI {
                 java.util.List<String> toCheck = new java.util.ArrayList<>();
                 toCheck.add("/");
                 int added = 0;
-                for (String p : ctx.publicPaths) { if (added>=3) break; toCheck.add(p); added++; }
+                for (String p : ctx.publicPaths) {
+                    if (added >= 3)
+                        break;
+                    toCheck.add(p);
+                    added++;
+                }
                 for (String path : toCheck) {
                     String url = ctx.url(path);
                     try (Response r = ctx.http.request("GET", url, null, null)) {
@@ -35,7 +41,8 @@ public class CorsHeadersScanner implements SPI {
                             si.severity = "Medium";
                             si.endpoint = path;
                             si.method = "GET";
-                            si.description = acao == null ? "Отсутствует заголовок Access-Control-Allow-Origin" : "Access-Control-Allow-Origin = * без явной публичности";
+                            si.description = acao == null ? "Отсутствует заголовок Access-Control-Allow-Origin"
+                                    : "Access-Control-Allow-Origin = * без явной публичности";
                             si.evidence = "Access-Control-Allow-Origin: " + acao;
                             si.impact = "Риск междоменного доступа к ресурсам";
                             si.recommendation = "Установить конкретные доверенные источники или явно пометить путь публичным";
@@ -44,7 +51,8 @@ public class CorsHeadersScanner implements SPI {
                         }
                     }
                 }
-            } catch (Exception ignored) { }
+            } catch (Exception ignored) {
+            }
         });
     }
 }
