@@ -1,7 +1,7 @@
 # Secrets and credentials
 token.jwt
 api_key.md
-
+.gitignore
 # Local outputs and logs
 out/
 *.log
