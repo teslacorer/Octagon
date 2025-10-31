@@ -95,6 +95,13 @@ public class ScanCommand implements Callable<Integer> {
         Instant started = Instant.now();
         log.info("Начало сканирования: базовый URL=" + (baseUrl!=null? baseUrl: "(из OpenAPI)") + ", пресет="+preset);
 
+        // Verify input files exist and compute line counts
+        if (openapi == null || !java.nio.file.Files.exists(openapi)) { log.error("OpenAPI file not found: " + String.valueOf(openapi), null); return 2; }
+        if (tokenFile == null || !java.nio.file.Files.exists(tokenFile)) { log.error("Token file not found: " + String.valueOf(tokenFile), null); return 2; }
+        long openapiLines = 0L; long tokenLines = 0L;
+        try (java.io.BufferedReader br = java.nio.file.Files.newBufferedReader(openapi)) { openapiLines = br.lines().count(); } catch (Exception ignored) {}
+        try (java.io.BufferedReader br = java.nio.file.Files.newBufferedReader(tokenFile)) { tokenLines = br.lines().count(); } catch (Exception ignored) {}
+
         OpenApiLoader loader = new OpenApiLoader();
         OpenApiLoader.LoadedSpec spec = loader.load(openapi);
         String targetBase = baseUrl != null? baseUrl: Optional.ofNullable(spec.firstServerUrl).orElse("http://localhost:8080");
@@ -109,6 +116,7 @@ public class ScanCommand implements Callable<Integer> {
         int threads = concurrency != null? concurrency: Math.max(2, Runtime.getRuntime().availableProcessors());
 
         String token = Files.readString(tokenFile).trim();
+        log.info("Input files verified: openapiLines=" + openapiLines + ", tokenLines=" + tokenLines);
         Files.createDirectories(tracesDir);
 
         HttpClient http = new HttpClient(dur, token, maskSecrets);
