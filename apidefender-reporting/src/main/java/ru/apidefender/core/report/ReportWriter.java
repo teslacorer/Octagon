@@ -63,9 +63,41 @@ public class ReportWriter {
         try (OutputStream os = new FileOutputStream(path.toFile())) {
             PdfRendererBuilder builder = new PdfRendererBuilder();
             builder.useFastMode();
+            // Try to register common system fonts with Cyrillic support (ensures correct glyphs)
+            registerDejaVuFonts(builder);
             builder.withHtmlContent(html, null);
             builder.toStream(os);
             builder.run();
         }
+    }
+
+    private void registerDejaVuFonts(PdfRendererBuilder builder) {
+        try {
+            String[] candidates = new String[]{
+                    "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+                    "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+                    "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf",
+                    "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf",
+                    // Common Windows fonts with Cyrillic support
+                    "C:/Windows/Fonts/arial.ttf",
+                    "C:/Windows/Fonts/arialbd.ttf",
+                    "C:/Windows/Fonts/segoeui.ttf",
+                    "C:/Windows/Fonts/segoeuib.ttf"
+            };
+            for (String p : candidates) {
+                java.io.File f = new java.io.File(p);
+                if (f.exists()) {
+                    String family;
+                    if (p.toLowerCase().contains("dejavu")) {
+                        family = p.contains("Serif") ? "DejaVu Serif" : "DejaVu Sans";
+                    } else if (p.toLowerCase().contains("segoe")) {
+                        family = "Segoe UI";
+                    } else {
+                        family = "Arial";
+                    }
+                    builder.useFont(f, family);
+                }
+            }
+        } catch (Exception ignored) { }
     }
 }
