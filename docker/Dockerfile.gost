@@ -1,0 +1,60 @@
+FROM maven:3.9-eclipse-temurin-21 AS build
+WORKDIR /src
+
+# Copy POMs first to leverage Docker layer caching for deps
+COPY pom.xml ./
+COPY apidefender-core/pom.xml apidefender-core/pom.xml
+COPY apidefender-scanners/pom.xml apidefender-scanners/pom.xml
+COPY apidefender-reporting/pom.xml apidefender-reporting/pom.xml
+COPY apidefender-cli/pom.xml apidefender-cli/pom.xml
+
+# Pre-fetch dependencies
+RUN mvn -q -e -B -DskipTests dependency:go-offline
+
+# Now copy sources and build CLI
+COPY apidefender-core/ apidefender-core/
+COPY apidefender-scanners/ apidefender-scanners/
+COPY apidefender-reporting/ apidefender-reporting/
+COPY apidefender-cli/ apidefender-cli/
+RUN mvn -q -e -B -DskipTests -T 1C -pl apidefender-cli -am package
+
+FROM eclipse-temurin:21-jre
+
+ENV APP_HOME=/app \
+    LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF-8"
+
+WORKDIR $APP_HOME
+
+# Install fonts and tools that we control here (non-GOST curl/openssl).
+# GOST-capable curl/openssl and CryptoPRO bits are expected to be baked
+# into the base image or extended by the user for their environment.
+RUN set -e \
+ && apt-get update \
+ && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        openssl \
+        fonts-dejavu-core \
+ && rm -rf /var/lib/apt/lists/*
+
+COPY --from=build /src/apidefender-cli/target /tmp/cli-target
+RUN set -e; f=$(ls -1 /tmp/cli-target/apidefender-cli-*.jar 2>/dev/null | grep -v "/original-" | head -n1); \
+    echo "Using JAR: $f"; \
+    mv "$f" /app/apidefender.jar; \
+    rm -rf /tmp/cli-target
+
+# Wrapper
+RUN printf '%s\n' '#!/usr/bin/env sh' \
+    'set -e' \
+    'exec java -Xms256m -Xmx1024m -jar /app/apidefender.jar "$@"' \
+    > /usr/local/bin/apidefender \
+ && chmod +x /usr/local/bin/apidefender
+
+RUN mkdir -p /app/specs /out /secrets /certs
+VOLUME ["/app/specs", "/out", "/secrets", "/certs"]
+
+ENTRYPOINT ["apidefender"]
+CMD ["--help"]
+
