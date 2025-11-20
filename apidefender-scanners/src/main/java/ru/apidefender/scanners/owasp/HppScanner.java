@@ -10,7 +10,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class HppScanner implements SPI {
-    @Override public String getCategory() { return "RateLimit"; }
+    @Override public String getCategory() { return "HPP"; }
 
     @Override
     public CompletableFuture<Void> run(ScanContext ctx) {
@@ -27,6 +27,7 @@ public class HppScanner implements SPI {
                 try (Response r1 = ctx.http.request("GET", single, null, null);
                      Response r2 = ctx.http.request("GET", duped, null, null)) {
                     int c1 = r1.code(), c2 = r2.code();
+                    if (c1 >= 400 || c2 >= 400) continue; // отбрасываем ошибки/429
                     String b1 = r1.peekBody(64_000).string();
                     String b2 = r2.peekBody(64_000).string();
                     int len1 = b1.length();
@@ -83,6 +84,7 @@ public class HppScanner implements SPI {
                          Response r2 = ctx.http.request("POST", base, Map.of("Content-Type","application/x-www-form-urlencoded"),
                             okhttp3.RequestBody.create(fDuped, mt))) {
                         int c1 = r1.code(), c2 = r2.code();
+                        if (c1 >= 400 || c2 >= 400) continue;
                         String b1 = r1.peekBody(64_000).string();
                         String b2 = r2.peekBody(64_000).string();
                         boolean anomaly = (c1 != c2) || Math.abs(b1.length()-b2.length()) > (b1.length()*0.25 + 100);
@@ -108,7 +110,7 @@ public class HppScanner implements SPI {
                     java.util.Map<String, java.util.List<String>> hh = new java.util.LinkedHashMap<>();
                     hh.put("X-Role", java.util.List.of("user", "admin"));
                     try (Response r = ctx.http.requestWithMultiHeaders("GET", base, hh, null)) {
-                        if (r.code() < 500) {
+                        if (r.code() < 400) {
                             ReportModel.SecurityIssue si = new ReportModel.SecurityIssue();
                             si.id = UUID.randomUUID().toString();
                             si.category = getCategory();

@@ -2,7 +2,6 @@ package ru.apidefender.scanners.owasp;
 
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import ru.apidefender.core.http.HttpClient;
 import ru.apidefender.core.report.ReportModel;
 import ru.apidefender.scanners.SPI;
 
@@ -11,7 +10,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class BflaScanner implements SPI {
-    @Override public String getCategory() { return "WeakAuth"; }
+    @Override public String getCategory() { return "BFLA"; }
 
     @Override
     public CompletableFuture<Void> run(ScanContext ctx) {
@@ -32,8 +31,7 @@ public class BflaScanner implements SPI {
                     tested++;
                     String url = ctx.url(p);
                     // try without token
-                    try (Response rNo = new HttpClient(java.time.Duration.ofSeconds(10), null, true)
-                            .request(m, url, Map.of("Content-Type","application/json"), sampleBody())) {
+                    try (Response rNo = ctx.http.request(m, url, Map.of("Content-Type","application/json"), sampleBody())) {
                         int codeNo = rNo.code();
                         if (codeNo >= 200 && codeNo < 300) {
                             ReportModel.SecurityIssue si = new ReportModel.SecurityIssue();
@@ -42,10 +40,10 @@ public class BflaScanner implements SPI {
                             si.severity = "High";
                             si.endpoint = p;
                             si.method = m;
-                            si.description = "Доступ к потенциально привилегированной функции без авторизации";
-                            si.evidence = "Статус без токена="+codeNo;
-                            si.impact = "Обход ограничений уровня функции";
-                            si.recommendation = "Требовать авторизацию/роль для админских операций";
+                            si.description = "BFLA: модифицирующий запрос прошёл без аутентификации";
+                            si.evidence = m + " без токена => " + codeNo;
+                            si.impact = "Угроза: неавторизованное изменение данных";
+                            si.recommendation = "Требовать аутентификацию/авторизацию для чувствительных операций";
                             si.traceRef = ctx.traceSaver.save(url, m, "{}", rNo);
                             synchronized (ctx.report.security){ ctx.report.security.add(si);} 
                         }

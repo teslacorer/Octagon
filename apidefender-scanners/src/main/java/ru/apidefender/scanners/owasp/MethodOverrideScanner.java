@@ -22,6 +22,7 @@ public class MethodOverrideScanner implements SPI {
                 String url = ctx.url(p);
                 try (Response base = ctx.http.request("GET", url, null, null)) {
                     int baseCode = base.code();
+                    if (baseCode >= 400) continue; // если базовый ответ ошибка/429 — пропускаем
 
                     // 1) X-HTTP-Method-Override
                     Map<String,String> h = new LinkedHashMap<>();
@@ -61,7 +62,7 @@ public class MethodOverrideScanner implements SPI {
 
     private void reportIfOverride(ScanContext ctx, String endpoint, int baseCode, Response over, String variant){
         int oc = over.code();
-        if (oc != baseCode && oc < 500) {
+        if (oc < 400 && baseCode < 400 && oc != baseCode) {
             ReportModel.SecurityIssue si = new ReportModel.SecurityIssue();
             si.id = UUID.randomUUID().toString();
             si.category = getCategory();

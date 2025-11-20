@@ -1,0 +1,893 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "Операций с лидами",
+        "description": "API для операций с лидами (заявками на создание юридических лиц для дальнейшей обработки (звонков, контактов) с целью привлечения клиентов) без использования ПДн.",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "https://api.bankingapi.ru/openapi/smb/lecs/lead/hackathon/v1"
+        }
+    ],
+    "tags": [
+        {
+            "name": "AddLead",
+            "description": "Добавление лидов"
+        },
+        {
+            "name": "LeadStatus",
+            "description": "Запрос статусов лидов"
+        },
+        {
+            "name": "CheckLead",
+            "description": "Проверка лидов"
+        }
+    ],
+    "paths": {
+        "/leads": {
+            "get": {
+                "tags": [
+                    "LeadStatus"
+                ],
+                "summary": "Получить информацию о лидах",
+                "description": "Метод получения информации о лидах (заявках на создание юридических лиц)",
+                "operationId": "getLeadStatusUsingGet",
+                "parameters": [
+                    {
+                        "name": "X-Global-Transaction-ID",
+                        "in": "header",
+                        "description": "Уникальный ID транзакции. Если не указан, генерируется в API и возвращается в таком же заголовке ответа",
+                        "schema": {
+                            "maxLength": 24,
+                            "minLength": 1,
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "leadId",
+                        "in": "query",
+                        "description": "Идентификаторы лидов ПКБ. Дублировать идентификаторы лидов в источнике не нужно.",
+                        "style": "form",
+                        "explode": true,
+                        "schema": {
+                            "maxItems": 255,
+                            "uniqueItems": true,
+                            "type": "array",
+                            "items": {
+                                "maximum": 9007199254740991,
+                                "minimum": 0,
+                                "type": "integer",
+                                "format": "int64"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Запрос успешно обработан полностью.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OpenApiLeadsStatusResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Как минимум одна заявка не обработана из-за ошибки в запросе.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OpenApiLeadsStatusResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Как минимум к одной заявке доступ запрещен.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OpenApiLeadsStatusResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Как минимум одна заявка не найдена.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OpenApiLeadsStatusResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Как минимум одна заявка не обработана из-за ошибки на сервере.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OpenApiLeadsStatusResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Сервис временно недоступен.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GenericError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/leads_impersonal": {
+            "post": {
+                "tags": [
+                    "AddLead"
+                ],
+                "summary": "Добавить лиды",
+                "description": "Добавляет лидов (заявки на создание юридических лиц) без персональных данных для дальнейшей обработки (звонков, контактов) с целью привлечения клиентов. Запрос может быть выполнен частично, то есть часть лидов из списка будет добавлена, а часть нет.",
+                "operationId": "createLeadsUsingPost",
+                "parameters": [
+                    {
+                        "name": "X-Global-Transaction-ID",
+                        "in": "header",
+                        "description": "Уникальный ID транзакции. Если не указан, генерируется в API и возвращается в таком же заголовке ответа",
+                        "schema": {
+                            "maxLength": 24,
+                            "minLength": 1,
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Запрос на создание лидов",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/OpenApiLeadsImpersonalRequestDto"
+                            }
+                        },
+                        "application/json-patch+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/OpenApiLeadsImpersonalRequestDto"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/OpenApiLeadsImpersonalRequestDto"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/OpenApiLeadsImpersonalRequestDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Запрос успешно обработан полностью.",
+                        "headers": {
+                            "Location": {
+                                "description": "Относительная ссылка на созданный объект. Пример: /openapi/smb/lecs/lead/hackathon/v1?leadId=123&leadId=245",
+                                "schema": {
+                                    "maxLength": 255,
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OpenApiLeadsImpersonalResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Как минимум одна заявка не обработана из-за ошибки в запросе.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OpenApiLeadsImpersonalResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Доступ запрещен.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OpenApiLeadsImpersonalResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Как минимум одна заявка не обработана из-за ошибки на сервере.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OpenApiLeadsImpersonalResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Сервис временно недоступен.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GenericError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "x-codegen-request-body-name": "body"
+            }
+        },
+        "/check_leads": {
+            "post": {
+                "tags": [
+                    "CheckLead"
+                ],
+                "summary": "Проверяет лидов",
+                "description": "Метод проверки лидов",
+                "operationId": "checkLeadsUsingPost",
+                "parameters": [
+                    {
+                        "name": "X-Global-Transaction-ID",
+                        "in": "header",
+                        "description": "Уникальный ID транзакции. Если не указан, генерируется в API и возвращается в таком же заголовке ответа",
+                        "schema": {
+                            "maxLength": 24,
+                            "minLength": 1,
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Запрос на проверку лидов",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/OpenApiLeadsCheckRequestDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Запрос успешно обработан полностью.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OpenApiLeadsCheckResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Как минимум одна проверка лида не обработан из-за ошибки в запросе.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OpenApiLeadsCheckResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Доступ запрещен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OpenApiLeadsCheckResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Как минимум один лид не обработан из-за ошибки на сервере.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OpenApiLeadsCheckResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Сервис временно недоступен.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GenericError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "x-codegen-request-body-name": "body"
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "GenericError": {
+                "required": [
+                    "httpCode"
+                ],
+                "type": "object",
+                "properties": {
+                    "httpCode": {
+                        "maxLength": 3,
+                        "type": "string",
+                        "description": "HTTP code",
+                        "example": "400"
+                    },
+                    "httpMessage": {
+                        "maxLength": 24,
+                        "type": "string",
+                        "description": "HTTP Message",
+                        "example": "Bad Request"
+                    },
+                    "moreInformation": {
+                        "maxLength": 128,
+                        "type": "string",
+                        "description": "Extended Message",
+                        "example": "Bad Request"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Коды ошибок"
+            },
+            "OpenApiLeadsImpersonalRequestDto": {
+                "title": "OpenApiLeadsImpersonalRequestDto",
+                "required": [
+                    "leads"
+                ],
+                "type": "object",
+                "properties": {
+                    "leads": {
+                        "maxItems": 255,
+                        "type": "array",
+                        "description": "Запрос на создание лида",
+                        "items": {
+                            "$ref": "#/components/schemas/OpenApiLeadImpersonalRequestDto"
+                        }
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Схема данных для запроса на создание лидов"
+            },
+            "OpenApiLeadsImpersonalResponseDto": {
+                "title": "OpenApiLeadsImpersonalResponseDto",
+                "required": [
+                    "leads"
+                ],
+                "type": "object",
+                "properties": {
+                    "leads": {
+                        "maxItems": 255,
+                        "type": "array",
+                        "description": "Ответ на создание лида",
+                        "items": {
+                            "$ref": "#/components/schemas/OpenApiLeadImpersonalResponseDto"
+                        }
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Схема данных для ответа на запрос создании лидов"
+            },
+            "OpenApiLeadsStatusResponseDto": {
+                "title": "OpenApiLeadsStatusResponseDto",
+                "required": [
+                    "leads"
+                ],
+                "type": "object",
+                "properties": {
+                    "leads": {
+                        "maxItems": 255,
+                        "type": "array",
+                        "description": "Ответ на запрос статуса лида",
+                        "items": {
+                            "$ref": "#/components/schemas/OpenApiLeadStatusResponseDto"
+                        }
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Схема данных для ответа на запрос статуса лидов"
+            },
+            "OpenApiLeadImpersonalRequestDto": {
+                "title": "OpenApiLeadImpersonalRequestDto",
+                "required": [
+                    "phone"
+                ],
+                "type": "object",
+                "properties": {
+                    "consentOnPersonalDataProcessing": {
+                        "title": "Согласие на обработку персональных данных",
+                        "type": "boolean",
+                        "description": "Флаг согласия на обработку персональных данных",
+                        "example": true
+                    },
+                    "salesCampaignId": {
+                        "title": "Подканал создания",
+                        "maximum": 9007199254740991,
+                        "minimum": 0,
+                        "type": "integer",
+                        "description": "Подканал создания (детализация источника лида)",
+                        "format": "int64",
+                        "example": 15
+                    },
+                    "attractionChannelId": {
+                        "title": "Подканал привлечения",
+                        "maximum": 9007199254740991,
+                        "minimum": 0,
+                        "type": "integer",
+                        "description": "Подканал привлечения",
+                        "format": "int64",
+                        "example": 15
+                    },
+                    "sourceLeadId": {
+                        "title": "Идентификатор лида в источнике",
+                        "maxLength": 128,
+                        "type": "string",
+                        "description": "Идентификатор лида в системе источнике используется для предотвращения повторного добавления одного и того же лида в ПКБ.",
+                        "example": "ap123"
+                    },
+                    "phone": {
+                        "title": "Телефон",
+                        "maxLength": 20,
+                        "type": "string",
+                        "description": "Номер телефона контакта юридического лица. Атрибут является обязательным для заполнения.  Длина составляет не менее 10 и не более 20 знаков. В обработку принимаются только цифры {0..9}, прочие символы отбрасываются. Если первая цифра 7 или 8, то она отбрасывается.",
+                        "example": "7123456789"
+                    },
+                    "inn": {
+                        "title": "ИНН",
+                        "maxLength": 12,
+                        "type": "string",
+                        "description": "Строка длинной 10 или 12 символов.",
+                        "example": "547779835982"
+                    },
+                    "companyName": {
+                        "title": "Компания",
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Название юридического лица.",
+                        "example": "ИП Иванов Иван Иванович"
+                    },
+                    "city": {
+                        "title": "Город",
+                        "maxLength": 100,
+                        "type": "string",
+                        "description": "Город для определения точки продаж из справочника ПКБ.",
+                        "example": "Москва"
+                    },
+                    "creationComment": {
+                        "title": "Комментарий",
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Комментарий при создании лида.",
+                        "example": "Перспективный клиент"
+                    },
+                    "productCode": {
+                        "title": "Код продукта",
+                        "maxLength": 150,
+                        "type": "string",
+                        "description": "Код интересующего продукта ВТБ.",
+                        "example": "Payments"
+                    },
+                    "productCodes": {
+                        "title": "Коды продуктов",
+                        "maxItems": 255,
+                        "type": "array",
+                        "items": {
+                            "maxLength": 150,
+                            "type": "string",
+                            "description": "Коды интересующих продуктов ВТБ",
+                            "example": "Payments"
+                        }
+                    },
+                    "servicePackageCode": {
+                        "title": "Код тарифа",
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Код тарифа",
+                        "example": "Start"
+                    },
+                    "departmentBisCode": {
+                        "title": "Идентификатор точки продаж (точки финансового учета) в Бисквите",
+                        "maxLength": 4,
+                        "type": "string",
+                        "description": "Идентификатор точки продаж (точки финансового учета) в Бисквите. Строка состоящая из 4х цифр",
+                        "example": "0925"
+                    },
+                    "utmSource": {
+                        "title": "Источник кампании",
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Наименование источника кампании.",
+                        "example": "Yandex"
+                    },
+                    "utmCampaign": {
+                        "title": "Название кампании",
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Наименование кампании.",
+                        "example": "Cifra"
+                    },
+                    "departmentSapId": {
+                        "title": "Идентификатор департамента из ЕАСУП",
+                        "maxLength": 128,
+                        "type": "string",
+                        "description": "Идентификатор департамента из ЕАСУП.",
+                        "example": "64"
+                    },
+                    "analytics": {
+                        "$ref": "#/components/schemas/OpenApiAnalyticsDto"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Схема данных для запроса на создание лида"
+            },
+            "OpenApiAnalyticsDto": {
+                "type": "object",
+                "properties": {
+                    "webStream": {
+                        "maxLength": 255,
+                        "minLength": 0,
+                        "type": "string",
+                        "description": "Стрим. Используется для отнесения в результат конкретного стрима",
+                        "example": "RUN ИП"
+                    },
+                    "webProject": {
+                        "maxLength": 255,
+                        "minLength": 0,
+                        "type": "string",
+                        "description": "Проект. Используется для отнесения в результат конкретного проекта",
+                        "example": "РКО"
+                    },
+                    "webSubChannel": {
+                        "maxLength": 255,
+                        "minLength": 0,
+                        "type": "string",
+                        "description": "ФИО контакта юридического лица",
+                        "example": "Классические онлайн-партнеры"
+                    },
+                    "webSubChannelGroup": {
+                        "maxLength": 255,
+                        "minLength": 0,
+                        "type": "string",
+                        "description": "Группа подканалов по типу трафика",
+                        "example": "Классические онлайн-партнеры"
+                    },
+                    "webSource": {
+                        "maxLength": 255,
+                        "minLength": 0,
+                        "type": "string",
+                        "description": "Источник трафика. Наименования конкретной площадки/партнера/поисковика/соцсети, сформировавшей лид",
+                        "example": "Синергия"
+                    },
+                    "webMedium": {
+                        "maxLength": 255,
+                        "minLength": 0,
+                        "type": "string",
+                        "description": "UTM-метка, которая хранит тип трафика",
+                        "example": "cpc"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Аналитические атрибуты"
+            },
+            "OpenApiLeadImpersonalResponseDto": {
+                "title": "OpenApiLeadImpersonalResponseDto",
+                "type": "object",
+                "properties": {
+                    "sourceLeadId": {
+                        "title": "Идентификатор лида в источнике",
+                        "maxLength": 128,
+                        "type": "string",
+                        "description": "Идентификатор лида в системе источнике используется для предотвращения повторного добавления одного и того же лида в ОС Лиды ЮЛ.",
+                        "example": "ap123"
+                    },
+                    "leadId": {
+                        "title": "Идентфикатор лида",
+                        "maximum": 9007199254740991,
+                        "minimum": 0,
+                        "type": "integer",
+                        "description": "Идентификатор лида в ОС Лиды ЮЛ.",
+                        "format": "int64",
+                        "example": 456789
+                    },
+                    "status": {
+                        "title": "Статус",
+                        "maxLength": 128,
+                        "type": "string",
+                        "description": "'Код публичного статуса лида. New - новый, VerificationFailed - не пройдена проверка, Duple - дубль, Processing - в работе, ProductOpened - продукт оформлен, CallFailed - окончательный недозвон, Rejected - закрыт отказом, TimeOut - закрыт по истечению срока.''",
+                        "example": "New"
+                    },
+                    "responseCode": {
+                        "title": "Код ответа",
+                        "type": "string",
+                        "description": "Код ответа. SUCCESS - успешно, NO_LEADS - в запросе отсутствуют лиды, INVALID_PHONE - в запросе отсутствует или некорректный телефон, UNEXPECTED_ERROR - неизвестная ошибка на сервере, LEAD_ALREADY_EXISTS - лид с таким идентификатором в источнике уже существует, INVALID_SOURCE_LEAD_ID - в запросе отсутствует идентификатор лида в источнике, INVALID_PRODUCT - некорректный продукт,  INVALID_SERVICE_PACKAGE - некорректный пакет услуг продукта,  AUTHENTICATION_FAILED - не пройдена аутентификация, UNDEFINED - запрос вернул неизвестный результат, REGION_NOT_AVAILABLE - Регион недоступен для агента, CITY_NOT_AVAILABLE - Город недоступен для агента, DEPARTMENT_NOT_AVAILABLE - Точка продаж недоступна для агента, INVALID_ATTRACTION_CHANNEL - Некорректный подканал привлечения лида",
+                        "example": "SUCCESS",
+                        "enum": [
+                            "SUCCESS",
+                            "NO_LEADS",
+                            "INVALID_PHONE",
+                            "INVALID_PRODUCT",
+                            "INVALID_SERVICE_PACKAGE",
+                            "UNEXPECTED_ERROR",
+                            "LEAD_ALREADY_EXISTS",
+                            "INVALID_SOURCE_LEAD_ID",
+                            "NO_PERMISSIONS",
+                            "AUTHENTICATION_FAILED",
+                            "UNDEFINED",
+                            "CONSENT_DENIED",
+                            "REGION_NOT_AVAILABLE",
+                            "CITY_NOT_AVAILABLE",
+                            "DEPARTMENT_NOT_AVAILABLE",
+                            "INVALID_ATTRACTION_CHANNEL"
+                        ]
+                    },
+                    "responseCodeDescription": {
+                        "title": "Описание ответа",
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Расшифровка ответа и предупреждения.",
+                        "example": "Операция выполнена успешно."
+                    },
+                    "inn": {
+                        "title": "ИНН",
+                        "maxLength": 12,
+                        "type": "string",
+                        "description": "Строка длиной 10 или 12 символов.",
+                        "example": "547779835982"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Схема данных для ответа на запрос на создание лида"
+            },
+            "OpenApiLeadStatusResponseDto": {
+                "title": "OpenApiLeadStatusResponseDto",
+                "type": "object",
+                "properties": {
+                    "leadId": {
+                        "title": "Идентфикатор лида",
+                        "maximum": 9007199254740991,
+                        "minimum": 0,
+                        "type": "integer",
+                        "description": "Идентификатор лида в ПКБ.",
+                        "format": "int64",
+                        "example": 456789
+                    },
+                    "sourceLeadId": {
+                        "title": "Идентификатор лида в источнике",
+                        "maxLength": 128,
+                        "type": "string",
+                        "description": "Идентификатор лида в системе источнике используется для предотвращения повторного добавления одного и того же лида в ПКБ.",
+                        "example": "ap123"
+                    },
+                    "status": {
+                        "title": "Статус",
+                        "maxLength": 128,
+                        "type": "string",
+                        "description": "Код публичного статуса лида. New - новый, VerificationFailed - не пройдена проверка, Duple - дубль, Processing - в работе, ProductOpened - продукт оформлен, CallFailed - окончательный недозвон, Rejected - закрыт отказом, TimeOut - закрыт по истечению срока.",
+                        "example": "Processing"
+                    },
+                    "statusChanged": {
+                        "title": "Дата изменения статуса",
+                        "type": "string",
+                        "description": "Дата и время изменения статуса",
+                        "format": "date-time",
+                        "example": "2020-11-02T14:32:36.120Z"
+                    },
+                    "responseCode": {
+                        "title": "Код ответа",
+                        "type": "string",
+                        "description": "'Код ответа. SUCCESS - успешно, LEAD_NOT_FOUND - лид не найден,\n UNEXPECTED_ERROR - неизвестная ошибка на сервере, NO_PERMISSIONS - отсутствует доступ к указанному лиду, AUTHENTICATION_FAILED - не пройдена аутентификация'",
+                        "example": "SUCCESS",
+                        "enum": [
+                            "SUCCESS",
+                            "LEAD_NOT_FOUND",
+                            "UNEXPECTED_ERROR",
+                            "NO_PERMISSIONS",
+                            "AUTHENTICATION_FAILED"
+                        ]
+                    },
+                    "responseCodeDescription": {
+                        "title": "Описание ответа",
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Расшифровка ответа и предупреждения.",
+                        "example": "Операция выполнена успешно."
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Схема данных для ответа на запрос статуса лида"
+            },
+            "OpenApiLeadsCheckRequestDto": {
+                "title": "OpenApiLeadsCheckRequestDto",
+                "required": [
+                    "leads"
+                ],
+                "type": "object",
+                "properties": {
+                    "leads": {
+                        "maxItems": 255,
+                        "type": "array",
+                        "description": "Запросы на проверку лидов",
+                        "items": {
+                            "$ref": "#/components/schemas/OpenApiLeadCheckRequestDto"
+                        }
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Схема данных для запроса на проверку лидов"
+            },
+            "OpenApiLeadCheckRequestDto": {
+                "title": "OpenApiLeadCheckRequestDto",
+                "required": [
+                    "inn",
+                    "productCode"
+                ],
+                "type": "object",
+                "properties": {
+                    "inn": {
+                        "title": "ИНН",
+                        "maxLength": 12,
+                        "type": "string",
+                        "description": "Строка длинной 10 или 12 символов.",
+                        "example": "547779835982"
+                    },
+                    "productCode": {
+                        "title": "Код продукта",
+                        "maxLength": 150,
+                        "type": "string",
+                        "description": "Код интересующего продукта ВТБ.",
+                        "example": "Payments"
+                    },
+                    "city": {
+                        "title": "Город",
+                        "maxLength": 100,
+                        "type": "string",
+                        "description": "Город",
+                        "example": "Москва"
+                    },
+                    "region": {
+                        "title": "Регион",
+                        "maxLength": 100,
+                        "type": "string",
+                        "description": "Регион",
+                        "example": "Московская область"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Схема данных для запроса на проверку лида"
+            },
+            "OpenApiLeadsCheckResponseDto": {
+                "title": "OpenApiLeadsCheckResponseDto",
+                "required": [
+                    "leads"
+                ],
+                "type": "object",
+                "properties": {
+                    "leads": {
+                        "maxItems": 255,
+                        "type": "array",
+                        "description": "Ответы по проверке лидов",
+                        "items": {
+                            "$ref": "#/components/schemas/OpenApiLeadCheckResponseDto"
+                        }
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Схема данных для ответа на запрос проверки лидов"
+            },
+            "OpenApiLeadCheckResponseDto": {
+                "title": "OpenApiLeadCheckResponseDto",
+                "required": [
+                    "responseCode"
+                ],
+                "type": "object",
+                "properties": {
+                    "inn": {
+                        "title": "ИНН",
+                        "maxLength": 12,
+                        "type": "string",
+                        "description": "Строка длиной 10 или 12 символов.",
+                        "example": "547779835982"
+                    },
+                    "productCode": {
+                        "title": "Код продукта",
+                        "maxLength": 150,
+                        "type": "string",
+                        "description": "Код интересующего продукта ВТБ.",
+                        "example": "Payments"
+                    },
+                    "city": {
+                        "title": "Город",
+                        "maxLength": 100,
+                        "type": "string",
+                        "description": "Город",
+                        "example": "Москва"
+                    },
+                    "region": {
+                        "title": "Регион",
+                        "maxLength": 100,
+                        "type": "string",
+                        "description": "Регион",
+                        "example": "Московская область"
+                    },
+                    "responseCode": {
+                        "title": "Код ответа",
+                        "type": "string",
+                        "description": "'Код ответа. POSITIVE - Лид может быть взят в работу,\nNEGATIVE - Лид не будет взят в работу,\nNO_LEADS - в запросе отсутствуют лиды,\nINVALID_INN - ИНН имеет неверный формат,\nINVALID_PRODUCT - указанный продукт не существует,\nNO_PERMISSIONS - доступ к данному методу запрещен,\nAUTHENTICATION_FAILED - не пройдена аутентификация\nUNEXPECTED_ERROR - при обработке запроса произошла неизвестная ошибка, обратитесь в поддержку.'",
+                        "example": "POSITIVE",
+                        "enum": [
+                            "POSITIVE",
+                            "NEGATIVE",
+                            "NO_LEADS",
+                            "INVALID_INN",
+                            "INVALID_PRODUCT",
+                            "NO_PERMISSIONS",
+                            "AUTHENTICATION_FAILED",
+                            "UNEXPECTED_ERROR"
+                        ]
+                    },
+                    "responseCodeDescription": {
+                        "title": "Описание ответа",
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Расшифровка ответа и предупреждения.",
+                        "example": "Операция выполнена успешно."
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Схема данных для ответа на запрос проверки лида"
+            }
+        },
+        "parameters": {
+            "X-Global-Transaction-ID": {
+                "name": "X-Global-Transaction-ID",
+                "in": "header",
+                "description": "Уникальный ID транзакции. Если не указан, генерируется в API и возвращается в таком же заголовке ответа",
+                "schema": {
+                    "maxLength": 24,
+                    "minLength": 1,
+                    "type": "string"
+                }
+            }
+        },
+        "securitySchemes": {
+            "clientSecret": {
+                "type": "apiKey",
+                "name": "X-IBM-Client-Secret",
+                "in": "header",
+                "x-key-type": "client_secret"
+            },
+            "clientID": {
+                "type": "apiKey",
+                "name": "X-IBM-Client-Id",
+                "in": "header"
+            }
+        }
+    }
+}

@@ -36,6 +36,9 @@ public class ReportWriter {
             x.impact = si.impact;
             x.recommendation = si.recommendation;
             x.traceRef = si.traceRef;
+            x.aiSeverity = si.aiSeverity;
+            x.aiRecommendation = si.aiRecommendation;
+            x.aiModel = si.aiModel;
             copy.security.add(x);
         }
         return copy;

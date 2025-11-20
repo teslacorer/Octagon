@@ -42,6 +42,9 @@ public class ReportModel {
         public String impact;
         public String recommendation;
         public String traceRef;
+        public Double aiSeverity;           // 0..10 from AI advisor
+        public String aiRecommendation;     // remediation text from AI advisor
+        public String aiModel;              // model used for enrichment
     }
     public static class Telemetry {
         public int requestsTotal;

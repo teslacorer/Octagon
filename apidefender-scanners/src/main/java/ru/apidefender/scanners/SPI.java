@@ -50,7 +50,27 @@ public interface SPI {
         }
         public String url(String path){
             String b = baseUrl.endsWith("/")? baseUrl.substring(0, baseUrl.length()-1): baseUrl;
-            return b + (path.startsWith("/")? path: "/"+path);
+            String resolved = resolvePathParams(path);
+            return b + (resolved.startsWith("/")? resolved: "/"+resolved);
+        }
+
+        private String resolvePathParams(String path) {
+            // не подставляем значения в плейсхолдеры, используем как есть
+            return path == null ? "" : path;
+        }
+
+        private String sampleValue(String name) {
+            if (name.contains("externalaccount")) return "0dbcb7ee-6c59-483b-966a-44d11557665b";
+            if (name.contains("account")) return "1001";
+            if (name.contains("payment")) return "9001";
+            if (name.contains("consent")) return "consent-1001";
+            if (name.contains("offer")) return "offer-1001";
+            if (name.contains("application")) return "app-1001";
+            if (name.contains("lead")) return "lead-1001";
+            if (name.contains("client")) return "team163";
+            if (name.contains("token")) return "tok_sample";
+            if (name.contains("id")) return "123";
+            return "1";
         }
     }
 }

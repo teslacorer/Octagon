@@ -1,0 +1,1463 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "Cервис платежа сотовому оператору",
+        "description": "сервис платежа в адрес операторов сотовой связи",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "https://api.bankingapi.ru/api/rb/pmnt/acceptance/mobile/hackathon/v1",
+            "description": "Адрес API в песочнице хакатона"
+        }
+    ],
+    "paths": {
+        "/products": {
+            "post": {
+                "description": "Получение списка продуктов, доступных для оплаты сотового платежа",
+                "tags": [
+                    "client-product-controller"
+                ],
+                "summary": "Получение списка продуктов, доступных для оплаты сотового платежа",
+                "operationId": "getClientProducts",
+                "parameters": [
+                    {
+                        "name": "X-MDM-ID",
+                        "in": "header",
+                        "description": "MDM ID",
+                        "required": true,
+                        "schema": {
+                            "maxLength": 255,
+                            "minLength": 1,
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ClientProductsDtoRq"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Успешно обработал запрос",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ClientProductsDtoRs"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Неправильный формат запроса к сервису",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorDtoRs"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Сервер выполнил некорректную операцию/произошла непредвиденная ошибка обработки запроса",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "maxLength": 10000,
+                                    "minLength": 1,
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/phones/info": {
+            "post": {
+                "description": "Получение параметров сотового оператора для указанного номера телефона",
+                "tags": [
+                    "mobile-number-controller"
+                ],
+                "summary": "Получение параметров сотового оператора для указанного номера телефона",
+                "operationId": "getMobileNumberInfo",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MobileNumberDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Успешно обработал запрос",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MobileNumberDtoRs"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Неправильный формат запроса к сервису",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorDtoRs"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Сервер выполнил некорректную операцию/произошла непредвиденная ошибка обработки запроса",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "maxLength": 10000,
+                                    "minLength": 1
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/payments/request": {
+            "post": {
+                "description": "Запрос на оплату номера мобильного телефона",
+                "tags": [
+                    "mobile-payment-controller"
+                ],
+                "summary": "Запрос на оплату номера мобильного телефона",
+                "operationId": "request",
+                "parameters": [
+                    {
+                        "name": "X-UNC",
+                        "in": "header",
+                        "description": "Идентификатор клиента УНК",
+                        "required": true,
+                        "schema": {
+                            "maxLength": 255,
+                            "minLength": 0,
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "X-MDM-ID",
+                        "in": "header",
+                        "description": "Идентификатор клиента mdm id",
+                        "required": true,
+                        "schema": {
+                            "maxLength": 255,
+                            "minLength": 0,
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "X-CLIENT-CHANNEL",
+                        "in": "header",
+                        "description": "Идентификатор канала клиента",
+                        "required": true,
+                        "schema": {
+                            "maxLength": 255,
+                            "minLength": 0,
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "X-TB-ID",
+                        "in": "header",
+                        "description": "Идентификатор клиента в телебанке",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 255,
+                            "minLength": 0
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AcceptancePaymentDtoRq"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Успешно обработал запрос",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AcceptancePaymentDtoRs"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Неправильный формат запроса к сервису",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorDtoRs"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Сервер выполнил некорректную операцию/произошла непредвиденная ошибка обработки запроса",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "maxLength": 10000,
+                                    "minLength": 0
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/payments/confirm": {
+            "post": {
+                "description": "Запрос на подтверждение оплаты номера мобильного телефона",
+                "tags": [
+                    "mobile-payment-controller"
+                ],
+                "summary": "Запрос на подтверждение оплаты номера мобильного телефона",
+                "operationId": "confirm",
+                "parameters": [
+                    {
+                        "name": "X-UNC",
+                        "in": "header",
+                        "description": "Идентификатор клиента УНК",
+                        "required": true,
+                        "schema": {
+                            "maxLength": 255,
+                            "minLength": 0,
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "X-MDM-ID",
+                        "in": "header",
+                        "description": "Идентификатор клиента mdm id",
+                        "required": true,
+                        "schema": {
+                            "maxLength": 255,
+                            "minLength": 0,
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "X-CLIENT-CHANNEL",
+                        "in": "header",
+                        "description": "Идентификатор канала клиента",
+                        "required": true,
+                        "schema": {
+                            "maxLength": 255,
+                            "minLength": 0,
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "X-TB-ID",
+                        "in": "header",
+                        "description": "Идентификатор клиента в телебанке",
+                        "required": true,
+                        "schema": {
+                            "maxLength": 255,
+                            "minLength": 0,
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "x-user-session-id",
+                        "in": "header",
+                        "description": "Идентификатор сессии клиента",
+                        "required": true,
+                        "schema": {
+                            "maxLength": 255,
+                            "minLength": 0,
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "X-CLIENT-INTERACTION",
+                        "in": "header",
+                        "description": "Вид взаимодействия клиента",
+                        "required": false,
+                        "schema": {
+                            "maxLength": 255,
+                            "minLength": 0,
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ConfirmPaymentDtoRq"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Успешно обработал запрос",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConfirmPaymentDtoRs"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Неправильный формат запроса к сервису",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorDtoRs"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Сервер выполнил некорректную операцию/произошла непредвиденная ошибка обработки запроса",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "maxLength": 10000,
+                                    "minLength": 0
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/payments/start": {
+            "post": {
+                "description": "Запрос для старта платежа",
+                "tags": [
+                    "mobile-payment-controller"
+                ],
+                "summary": "Запрос для старта платежа",
+                "operationId": "startPayment",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StartPaymentDtoRq"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Успешно обработал запрос",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StartPaymentDtoRs"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Неправильный формат запроса к сервису",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorDtoRs"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Сервер выполнил некорректную операцию/произошла непредвиденная ошибка обработки запроса",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "maxLength": 10000,
+                                    "minLength": 0
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/payments/{paymentId}": {
+            "get": {
+                "description": "Запрос детальной информации по платежу",
+                "tags": [
+                    "mobile-payment-controller"
+                ],
+                "summary": "Запрос детальной информации по платежу",
+                "operationId": "getPayment",
+                "parameters": [
+                    {
+                        "name": "X-MDM-ID",
+                        "in": "header",
+                        "description": "Идентификатор клиента mdm id",
+                        "required": true,
+                        "schema": {
+                            "maxLength": 255,
+                            "minLength": 0,
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "paymentId",
+                        "in": "path",
+                        "description": "Идентификатор платежа",
+                        "required": true,
+                        "schema": {
+                            "maxLength": 255,
+                            "minLength": 0,
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешно обработал запрос",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaymentDtoRs"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Неправильный формат запроса к сервису",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorDtoRs"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Сервер выполнил некорректную операцию/произошла непредвиденная ошибка обработки запроса",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "maxLength": 10000,
+                                    "minLength": 0
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/payments/{paymentId}/check": {
+            "get": {
+                "description": "Запрос чека по платежу",
+                "tags": [
+                    "mobile-payment-controller"
+                ],
+                "summary": "Запрос чека по платежу",
+                "operationId": "getPaymentCheck",
+                "parameters": [
+                    {
+                        "name": "X-MDM-ID",
+                        "in": "header",
+                        "description": "Идентификатор клиента mdm id",
+                        "required": true,
+                        "schema": {
+                            "maxLength": 255,
+                            "minLength": 0,
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "paymentId",
+                        "in": "path",
+                        "description": "Идентификатор платежа",
+                        "required": true,
+                        "schema": {
+                            "maxLength": 255,
+                            "minLength": 0,
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешно обработал запрос",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MobilePaymentCheckDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Неправильный формат запроса к сервису",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorDtoRs"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Сервер выполнил некорректную операцию/произошла непредвиденная ошибка обработки запроса",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string",
+                                    "maxLength": 10000,
+                                    "minLength": 0
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "ErrorDtoRs": {
+                "required": [
+                    "status"
+                ],
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "status": {
+                        "$ref": "#/components/schemas/StatusDtoRs"
+                    },
+                    "errors": {
+                        "type": "array",
+                        "description": "Список полей с ошибками",
+                        "items": {
+                            "$ref": "#/components/schemas/ErrorFieldDtoRs"
+                        }
+                    }
+                },
+                "description": "Ответ с информацией об ошибке"
+            },
+            "ErrorFieldDtoRs": {
+                "required": [
+                    "code",
+                    "message",
+                    "name"
+                ],
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "name": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Ключ/название ошибочного поля"
+                    },
+                    "code": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Код ошибки"
+                    },
+                    "message": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Текст ошибки",
+                        "example": "Некорректные данные"
+                    }
+                },
+                "description": "Описание ошибки"
+            },
+            "StatusDtoRs": {
+                "required": [
+                    "code"
+                ],
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "code": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Код статуса"
+                    },
+                    "message": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Сообщение",
+                        "example": "Ошибка валидации запроса на оплату"
+                    }
+                },
+                "description": "Статус ответа"
+            },
+            "ClientProductsDtoRq": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "paySum": {
+                        "$ref": "#/components/schemas/MoneyDto"
+                    }
+                },
+                "description": "Данные для запроса доступных продуктов клиента"
+            },
+            "CurrencyDto": {
+                "required": [
+                    "code"
+                ],
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "code": {
+                        "maxLength": 3,
+                        "type": "string",
+                        "description": "Код",
+                        "example": "RUB"
+                    }
+                },
+                "description": "Информация о валюте"
+            },
+            "MoneyDto": {
+                "required": [
+                    "amount"
+                ],
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "amount": {
+                        "maximum": 999999999,
+                        "minimum": -999999999,
+                        "type": "number",
+                        "description": "Сумма",
+                        "example": 600
+                    },
+                    "currency": {
+                        "$ref": "#/components/schemas/CurrencyDto"
+                    }
+                },
+                "description": "Информация о сумме и валюте"
+            },
+            "AccountDtoRs": {
+                "required": [
+                    "balance",
+                    "productType",
+                    "publicId"
+                ],
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "entityName": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Имя продукта"
+                    },
+                    "alias": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Пользовательское название продукта"
+                    },
+                    "publicId": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Публичный идентификатор продукта"
+                    },
+                    "productType": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Общий тип продукта",
+                        "enum": [
+                            "ACCOUNT"
+                        ]
+                    },
+                    "entityType": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Тип продукта"
+                    },
+                    "entityId": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Номер счета"
+                    },
+                    "balance": {
+                        "$ref": "#/components/schemas/MoneyDto"
+                    }
+                },
+                "description": "Информация о счете клиента"
+            },
+            "CardDtoRs": {
+                "required": [
+                    "balance",
+                    "productType",
+                    "publicId"
+                ],
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "entityName": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Имя продукта"
+                    },
+                    "alias": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Пользовательское название продукта"
+                    },
+                    "publicId": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Публичный идентификатор продукта"
+                    },
+                    "productType": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Общий тип продукта",
+                        "enum": [
+                            "CARD"
+                        ]
+                    },
+                    "entityType": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Тип продукта"
+                    },
+                    "entityId": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Номер счета"
+                    },
+                    "balance": {
+                        "$ref": "#/components/schemas/MoneyDto"
+                    }
+                },
+                "description": "Информация о карте клиента"
+            },
+            "ClientProductsDtoRs": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "accounts": {
+                        "type": "array",
+                        "description": "Список счетов клиента",
+                        "items": {
+                            "$ref": "#/components/schemas/AccountDtoRs"
+                        }
+                    },
+                    "cards": {
+                        "type": "array",
+                        "description": "Список карт клиента",
+                        "items": {
+                            "$ref": "#/components/schemas/CardDtoRs"
+                        }
+                    }
+                },
+                "description": "Информация о продукте клиента"
+            },
+            "MobileNumberDto": {
+                "required": [
+                    "number"
+                ],
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "number": {
+                        "maxLength": 11,
+                        "type": "string",
+                        "description": "Номер мобильного телефона",
+                        "example": "9008001122"
+                    }
+                },
+                "description": "Запрос с информацией о номере мобильного телефона"
+            },
+            "MobileNumberDtoRs": {
+                "required": [
+                    "number",
+                    "paymentOptions",
+                    "serviceProvider"
+                ],
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "number": {
+                        "maxLength": 11,
+                        "type": "string",
+                        "description": "Номер мобильного телефона",
+                        "example": "79008001122"
+                    },
+                    "paymentOptions": {
+                        "$ref": "#/components/schemas/PaymentOptionsDto"
+                    },
+                    "serviceProvider": {
+                        "$ref": "#/components/schemas/ServiceProviderDtoRs"
+                    }
+                },
+                "description": "Ответ с информацией о номере мобильного телефона"
+            },
+            "PaySumLimitDto": {
+                "required": [
+                    "maxSum",
+                    "minSum"
+                ],
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "minSum": {
+                        "$ref": "#/components/schemas/MoneyDto"
+                    },
+                    "maxSum": {
+                        "$ref": "#/components/schemas/MoneyDto"
+                    }
+                },
+                "description": "Лимиты платежа"
+            },
+            "PaymentOptionsDto": {
+                "required": [
+                    "paySumLimit",
+                    "recommendedSums"
+                ],
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "paySumLimit": {
+                        "$ref": "#/components/schemas/PaySumLimitDto"
+                    },
+                    "recommendedSums": {
+                        "type": "array",
+                        "description": "Список рекомендованных сумм платежа",
+                        "items": {
+                            "$ref": "#/components/schemas/MoneyDto"
+                        }
+                    }
+                },
+                "description": "Информация о рекомендованных значениях платежа"
+            },
+            "OperationActionsDtoRs": {
+                "required": [
+                    "autoPaymentByBalance",
+                    "autoPaymentByDate",
+                    "invoice",
+                    "payment",
+                    "remind",
+                    "repeat",
+                    "subscription",
+                    "template"
+                ],
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "payment": {
+                        "$ref": "#/components/schemas/OperationActionParameterDtoRs"
+                    },
+                    "template": {
+                        "$ref": "#/components/schemas/OperationActionParameterDtoRs"
+                    },
+                    "autoPaymentByDate": {
+                        "$ref": "#/components/schemas/OperationActionParameterDtoRs"
+                    },
+                    "autoPaymentByBalance": {
+                        "$ref": "#/components/schemas/OperationActionParameterDtoRs"
+                    },
+                    "invoice": {
+                        "$ref": "#/components/schemas/OperationActionParameterDtoRs"
+                    },
+                    "repeat": {
+                        "$ref": "#/components/schemas/OperationActionParameterDtoRs"
+                    },
+                    "remind": {
+                        "$ref": "#/components/schemas/OperationActionParameterDtoRs"
+                    },
+                    "subscription": {
+                        "$ref": "#/components/schemas/OperationActionParameterDtoRs"
+                    }
+                },
+                "description": "Класс действий над услугой ПУ"
+            },
+            "OperationActionParameterDtoRs": {
+                "required": [
+                    "enabled",
+                    "systemId"
+                ],
+                "type": "object",
+                "additionalProperties": false,
+                "description": "Возможность взаимодействия с услугой",
+                "properties": {
+                    "enabled": {
+                        "type": "boolean",
+                        "description": "Включено/выключено действие над услугой ПУ"
+                    },
+                    "systemId": {
+                        "type": "string",
+                        "description": "Идентификатор системы",
+                        "enum": [
+                            "MINERVA",
+                            "MS"
+                        ]
+                    }
+                }
+            },
+            "ServiceProviderDtoRs": {
+                "required": [
+                    "id",
+                    "name",
+                    "type"
+                ],
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "id": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "ID поставщика услуги",
+                        "example": "1"
+                    },
+                    "name": {
+                        "maxLength": 36,
+                        "type": "string",
+                        "description": "Наименование поставщика услуги",
+                        "example": "Какой-то поставщик"
+                    },
+                    "shortName": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Короткое название ПУ",
+                        "example": "Поставщик"
+                    },
+                    "type": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Тип ПУ",
+                        "example": "CONTRACT",
+                        "enum": [
+                            "CONTRACT"
+                        ]
+                    },
+                    "subTypes": {
+                        "uniqueItems": true,
+                        "type": "array",
+                        "description": "Подтип ПУ",
+                        "example": [
+                            "MOBILE_BY_PHONE"
+                        ],
+                        "items": {
+                            "maxLength": 36,
+                            "type": "string",
+                            "description": "Подтип ПУ",
+                            "example": "MOBILE_BY_PHONE",
+                            "enum": [
+                                "MOBILE_BY_PHONE"
+                            ]
+                        }
+                    },
+                    "description": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Описание ПУ",
+                        "example": "Описание поставщика"
+                    },
+                    "actions": {
+                        "$ref": "#/components/schemas/OperationActionsDtoRs"
+                    },
+                    "categoryIds": {
+                        "uniqueItems": true,
+                        "type": "array",
+                        "description": "Список ID категорий, в которых доступен поставщик",
+                        "items": {
+                            "maxLength": 255,
+                            "type": "string",
+                            "description": "Список ID категорий, в которых доступен поставщик"
+                        }
+                    }
+                },
+                "description": "Информация о поставщике услуги"
+            },
+            "AcceptancePaymentDtoRq": {
+                "required": [
+                    "clientProduct",
+                    "mobileNumber",
+                    "paySum",
+                    "serviceProviderId"
+                ],
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "serviceProviderId": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Идентификатор поставщика услуг",
+                        "example": "1"
+                    },
+                    "clientProduct": {
+                        "$ref": "#/components/schemas/ClientProductDtoRq"
+                    },
+                    "mobileNumber": {
+                        "$ref": "#/components/schemas/MobileNumberDto"
+                    },
+                    "paySum": {
+                        "$ref": "#/components/schemas/MoneyDto"
+                    }
+                },
+                "description": "Запрос с информацией о платеже за мобильную связь"
+            },
+            "ClientProductDtoRq": {
+                "required": [
+                    "id",
+                    "type"
+                ],
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "id": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "ID продукта клиента",
+                        "example": "1329CD96444B428895BEF56AF8016246"
+                    },
+                    "type": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Тип продукта клиента",
+                        "enum": [
+                            "ACCOUNT",
+                            "CARD"
+                        ]
+                    }
+                },
+                "description": "Информация о продукте клиента"
+            },
+            "AcceptancePaymentDtoRs": {
+                "required": [
+                    "status"
+                ],
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "status": {
+                        "$ref": "#/components/schemas/StatusDtoRs"
+                    },
+                    "payment": {
+                        "$ref": "#/components/schemas/DraftDto"
+                    }
+                },
+                "description": "Ответ с информацией о платеже за мобильную связь"
+            },
+            "ClientProductDtoRs": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "account": {
+                        "$ref": "#/components/schemas/AccountDtoRs"
+                    },
+                    "card": {
+                        "$ref": "#/components/schemas/CardDtoRs"
+                    }
+                },
+                "description": "Информация о продукте клиента"
+            },
+            "DraftDto": {
+                "required": [
+                    "clientProduct",
+                    "commission",
+                    "id",
+                    "paySum",
+                    "serviceProvider",
+                    "totalSum"
+                ],
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "id": {
+                        "maxLength": 36,
+                        "type": "string",
+                        "description": "ID платежа",
+                        "example": "4d9065bc-55f7-4317-b728-5097344dc72f"
+                    },
+                    "paySum": {
+                        "$ref": "#/components/schemas/MoneyDto"
+                    },
+                    "commission": {
+                        "$ref": "#/components/schemas/MoneyDto"
+                    },
+                    "totalSum": {
+                        "$ref": "#/components/schemas/MoneyDto"
+                    },
+                    "clientProduct": {
+                        "$ref": "#/components/schemas/ClientProductDtoRs"
+                    },
+                    "serviceProvider": {
+                        "$ref": "#/components/schemas/ServiceProviderDtoRs"
+                    }
+                },
+                "description": "Информация о платеже"
+            },
+            "ClientApproveDtoRq": {
+                "required": [
+                    "purpose"
+                ],
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "purpose": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Цель запроса"
+                    },
+                    "code": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Код для проверки",
+                        "example": "1234"
+                    }
+                },
+                "description": "Информация о подтверждении "
+            },
+            "ConfirmPaymentDtoRq": {
+                "required": [
+                    "id"
+                ],
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "id": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "ID платежа"
+                    },
+                    "clientApprove": {
+                        "$ref": "#/components/schemas/ClientApproveDtoRq"
+                    }
+                },
+                "description": "Запрос с информацией о подтверждении платежа за мобильную связь"
+            },
+            "AuthCodeDtoRs": {
+                "required": [
+                    "lifeTime"
+                ],
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "lifeTime": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Время жизни кода подтверждения в секундах"
+                    }
+                },
+                "description": "Информация о коде подтверждения АЦ"
+            },
+            "ClientApproveDtoRs": {
+                "required": [
+                    "code"
+                ],
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "code": {
+                        "$ref": "#/components/schemas/AuthCodeDtoRs"
+                    }
+                },
+                "description": "Информация о подтверждении платежа"
+            },
+            "ConfirmPaymentDtoRs": {
+                "required": [
+                    "status"
+                ],
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "status": {
+                        "$ref": "#/components/schemas/StatusDtoRs"
+                    },
+                    "payment": {
+                        "$ref": "#/components/schemas/PaymentDtoRs"
+                    },
+                    "approve": {
+                        "$ref": "#/components/schemas/ClientApproveDtoRs"
+                    }
+                },
+                "description": "Ответ с информацией о подтверждении платежа за мобильную связь"
+            },
+            "PaymentActionsDto": {
+                "required": [
+                    "autoPaymentByBalance",
+                    "autoPaymentByDate",
+                    "check",
+                    "remind",
+                    "repeat",
+                    "template"
+                ],
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "repeat": {
+                        "type": "boolean",
+                        "description": "Возможен повтор",
+                        "example": true
+                    },
+                    "check": {
+                        "type": "boolean",
+                        "description": "Возможно получение квитанции",
+                        "example": true
+                    },
+                    "remind": {
+                        "type": "boolean",
+                        "description": "Возможно создание напоминания",
+                        "example": true
+                    },
+                    "template": {
+                        "type": "boolean",
+                        "description": "Возможно создание шаблона",
+                        "example": true
+                    },
+                    "autoPaymentByDate": {
+                        "type": "boolean",
+                        "description": "Возможно создание автоплатежа на дату",
+                        "example": true
+                    },
+                    "autoPaymentByBalance": {
+                        "type": "boolean",
+                        "description": "Возможно создание автоплатежа по сумме на балансе",
+                        "example": true
+                    }
+                },
+                "description": "Информация о доступных операциях для платежа"
+            },
+            "PaymentDtoRs": {
+                "required": [
+                    "actions",
+                    "clientProduct",
+                    "createdAt",
+                    "creationChannel",
+                    "description",
+                    "documentId",
+                    "id",
+                    "mobileNumber",
+                    "paySum",
+                    "serviceProvider",
+                    "sourceSystemId",
+                    "sourceType",
+                    "status",
+                    "totalSum",
+                    "updatedAt",
+                    "userMdmId"
+                ],
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "id": {
+                        "maxLength": 36,
+                        "type": "string",
+                        "description": "ID платежа",
+                        "example": "4d9065bc-55f7-4317-b728-5097344dc72f"
+                    },
+                    "documentId": {
+                        "maxLength": 36,
+                        "type": "string",
+                        "description": "Номер платежа",
+                        "example": "1234567890"
+                    },
+                    "status": {
+                        "maxLength": 16,
+                        "type": "string",
+                        "description": "Статус платежа",
+                        "enum": [
+                            "PROCESSING",
+                            "EXECUTED",
+                            "REFUSED",
+                            "RSA_REVIEW",
+                            "ERROR"
+                        ]
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "description": "Время создания платежа",
+                        "format": "date-time"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "description": "Время обновления платежа",
+                        "format": "date-time"
+                    },
+                    "creationChannel": {
+                        "maxLength": 16,
+                        "type": "string",
+                        "description": "Канал создания платежа",
+                        "enum": [
+                            "MOBILE"
+                        ]
+                    },
+                    "sourceType": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Тип источника платежа",
+                        "enum": [
+                            "NEW",
+                            "REPEAT",
+                            "TEMPLATE",
+                            "REMINDER",
+                            "AUTOPAYMENT"
+                        ]
+                    },
+                    "userMdmId": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "ID пользователя",
+                        "example": "1234567890"
+                    },
+                    "sourceSystemId": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "ID системы создавшей платеж",
+                        "example": "payments-acceptance-mobile"
+                    },
+                    "serviceProvider": {
+                        "$ref": "#/components/schemas/ServiceProviderDtoRs"
+                    },
+                    "clientProduct": {
+                        "$ref": "#/components/schemas/ClientProductDtoRs"
+                    },
+                    "paySum": {
+                        "$ref": "#/components/schemas/MoneyDto"
+                    },
+                    "commission": {
+                        "$ref": "#/components/schemas/MoneyDto"
+                    },
+                    "totalSum": {
+                        "$ref": "#/components/schemas/MoneyDto"
+                    },
+                    "description": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Назначение платежа"
+                    },
+                    "limitTransactionId": {
+                        "maxLength": 36,
+                        "type": "string",
+                        "description": "ID транзакции лимита платежа",
+                        "example": "4d9065bc-55f7-4317-b728-5097344dc72f"
+                    },
+                    "confirmTransactionId": {
+                        "maxLength": 36,
+                        "type": "string",
+                        "description": "ID транзакции подтверждения платежа кодом подтверждения",
+                        "example": "4d9065bc-55f7-4317-b728-5097344dc72f"
+                    },
+                    "subStatus": {
+                        "maxLength": 36,
+                        "type": "string",
+                        "description": "Под статус платежа",
+                        "enum": [
+                            "LIMIT_EXCEEDED"
+                        ]
+                    },
+                    "mobileNumber": {
+                        "$ref": "#/components/schemas/MobileNumberDto"
+                    },
+                    "actions": {
+                        "$ref": "#/components/schemas/PaymentActionsDto"
+                    }
+                },
+                "description": "Полная информация о платеже"
+            },
+            "StartPaymentDtoRq": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "serviceProviderId": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "description": "Идентификатор поставщика услуги",
+                        "example": "1"
+                    }
+                },
+                "description": "Запрос для старта оплаты"
+            },
+            "MobileNumberFormatsDto": {
+                "required": [
+                    "validFormats"
+                ],
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "validFormats": {
+                        "maxItems": 36,
+                        "uniqueItems": true,
+                        "type": "array",
+                        "description": "Шаблоны валидных номеров",
+                        "items": {
+                            "maxLength": 255,
+                            "type": "string",
+                            "description": "Шаблоны валидных номеров"
+                        }
+                    }
+                },
+                "description": "Шаблоны номеров мобильного телефона"
+            },
+            "StartPaymentDtoRs": {
+                "required": [
+                    "mobileNumber",
+                    "paymentOptions"
+                ],
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "paymentOptions": {
+                        "$ref": "#/components/schemas/PaymentOptionsDto"
+                    },
+                    "mobileNumber": {
+                        "$ref": "#/components/schemas/MobileNumberFormatsDto"
+                    }
+                },
+                "description": "Информация для старта процесса платежа"
+            },
+            "MobilePaymentCheckDto": {
+                "required": [
+                    "pdf"
+                ],
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "pdf": {
+                        "maxLength": 5000000,
+                        "type": "string",
+                        "description": "Чек в формате пдв, закодированный в base64"
+                    }
+                },
+                "description": "Информация о по чеку"
+            }
+        },
+        "securitySchemes": {
+            "EpaAuth": {
+                "type": "http",
+                "description": "Авторизация ЕПА",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    }
+}

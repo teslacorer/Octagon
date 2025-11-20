@@ -4,7 +4,9 @@ import okhttp3.*;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 public class HttpClient {
     private final OkHttpClient client;
@@ -22,6 +24,11 @@ public class HttpClient {
     public Response request(String method, String url, Map<String, String> headers, RequestBody body) throws IOException {
         Request.Builder b = new Request.Builder().url(url);
         if (token != null && !token.isBlank()) b.header("Authorization", "Bearer " + token);
+        // default correlation headers if не переданы
+        boolean hasCorr = hasHeader(headers, "Correlation-ID");
+        boolean hasCaller = hasHeader(headers, "X-Caller-Id");
+        if (!hasCorr) b.header("Correlation-ID", UUID.randomUUID().toString());
+        if (!hasCaller) b.header("X-Caller-Id", "partner");
         if (headers != null) headers.forEach(b::header);
         switch (method.toUpperCase()) {
             case "GET" -> b.get();
@@ -39,6 +46,10 @@ public class HttpClient {
     public Response requestWithMultiHeaders(String method, String url, Map<String, java.util.List<String>> headers, RequestBody body) throws IOException {
         Request.Builder b = new Request.Builder().url(url);
         if (token != null && !token.isBlank()) b.header("Authorization", "Bearer " + token);
+        boolean hasCorr = hasHeaderMulti(headers, "Correlation-ID");
+        boolean hasCaller = hasHeaderMulti(headers, "X-Caller-Id");
+        if (!hasCorr) b.header("Correlation-ID", UUID.randomUUID().toString());
+        if (!hasCaller) b.header("X-Caller-Id", "partner");
         if (headers != null) headers.forEach((k, vs) -> {
             if (vs != null) for (String v : vs) b.addHeader(k, v);
         });
@@ -52,6 +63,23 @@ public class HttpClient {
             default -> throw new IllegalArgumentException("Неподдерживаемый метод: " + method);
         }
         return client.newCall(b.build()).execute();
+    }
+
+    private boolean hasHeader(Map<String,String> headers, String name){
+        if (headers == null) return false;
+        String n = name.toLowerCase(Locale.ROOT);
+        for (String k : headers.keySet()) {
+            if (k != null && k.toLowerCase(Locale.ROOT).equals(n)) return true;
+        }
+        return false;
+    }
+    private boolean hasHeaderMulti(Map<String,java.util.List<String>> headers, String name){
+        if (headers == null) return false;
+        String n = name.toLowerCase(Locale.ROOT);
+        for (String k : headers.keySet()) {
+            if (k != null && k.toLowerCase(Locale.ROOT).equals(n)) return true;
+        }
+        return false;
     }
 
     public static String dumpResponse(Response resp, boolean mask) throws IOException {

@@ -16,7 +16,6 @@ public class HtmlTemplates {
         String sevSummary = sevCounts.entrySet().stream()
                 .map(e -> "<span class='sev sev-"+cls(e.getKey())+"'>"+escape(e.getKey())+": "+e.getValue()+"</span>")
                 .collect(Collectors.joining(" &#160; "));
-        // OWASP Risk summary
         Map<String,Integer> riskCounts = new HashMap<>();
         for (ReportModel.SecurityIssue si : r.security) {
             try {
@@ -35,12 +34,16 @@ public class HtmlTemplates {
                 ru.apidefender.core.risk.RiskAssessor.Risk rk = ru.apidefender.core.risk.RiskAssessor.compute(i);
                 riskCell = escape(rk.rating+" ("+String.format(java.util.Locale.US, "%.1f", rk.score)+")");
             } catch (Exception ignored) {}
+            String aiSev = i.aiSeverity != null ? String.format(java.util.Locale.US, "%.1f / 10", i.aiSeverity) : "";
+            String aiRec = i.aiRecommendation != null ? i.aiRecommendation : "";
             return "<tr class='sev-"+cls(i.severity)+"'>"+
                     td(escape(i.category))+
                     td(escape(i.severity))+
                     td(escape(i.method+" "+i.endpoint))+
                     td(riskCell)+
+                    td(escape(aiSev))+
                     td(escape(i.description))+
+                    td(escape(aiRec))+
                     td(escape(i.recommendation))+
                     td(details)+
                     "</tr>";
@@ -54,7 +57,6 @@ public class HtmlTemplates {
         String tel2 = r.telemetry.scannerDurMs.entrySet().stream().map(e->{ double sec = e.getValue()/1000.0; return "<li>"+escape(e.getKey())+": "+String.format(java.util.Locale.US, "%.1f s", sec)+"</li>"; }).collect(Collectors.joining());
         String tel3 = r.telemetry.presetParams.entrySet().stream().map(e->"<li>"+escape(e.getKey())+": "+escape(String.valueOf(e.getValue()))+"</li>").collect(Collectors.joining());
 
-        // HTML-only: derive slowest endpoints from RateLimit evidence
         java.util.List<String> slow = new java.util.ArrayList<>();
         for (ReportModel.SecurityIssue si : r.security) {
             if ("RateLimit".equals(si.category)) {
@@ -73,7 +75,7 @@ public class HtmlTemplates {
         + "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"ru\">"
         + "<head>"
         + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />"
-        + "<title>Отчет API Defender</title>"
+        + "<title>API Defender</title>"
         + "<style type=\"text/css\">"
         + "body{font-family:sans-serif} table{border-collapse:collapse;width:100%} td,th{border:1px solid #bbb;padding:8px}"
         + ".sev{padding:3px 8px;border-radius:4px;color:#fff;font-weight:600}"
@@ -82,18 +84,19 @@ public class HtmlTemplates {
         + "details summary{cursor:pointer;color:#1565c0} pre{white-space:pre-wrap;background:#f6f8fa;padding:8px;border-radius:4px}"
         + "</style>"
         + "</head><body>"
-        + "<h1>Отчет API Defender</h1>"
-        + "<p><b>Цель:</b> "+escape(nullToEmpty(r.meta.target))+"<br/><b>Профиль:</b> "+preset+"<br/><b>Длительность:</b> "+String.format(java.util.Locale.US, "%.1f s", (r.meta.durationMs/1000.0))+"</p>"
-        + "<h2>Итоги</h2>"
-        + "<p><b>По уровням серьезности:</b> "+sevSummary+"</p>"
-        + "<p><b>Найдены уязвимости по категориям:</b><ul>"+tel1+"</ul>"
-        + "<b>Время работы сканеров:</b><ul>"+tel2+"</ul>"
-        + "<b>Параметры профиля:</b><ul>"+tel3+"</ul>"
-        + (slowHtml.isBlank()? "" : "<b>Самые медленные (по t5000):</b><ul>"+slowHtml+"</ul>")
+        + "<h1>API Defender</h1>"
+        + "<p><b>Target:</b> "+escape(nullToEmpty(r.meta.target))+"<br/><b>Preset:</b> "+preset+"<br/><b>Duration:</b> "+String.format(java.util.Locale.US, "%.1f s", (r.meta.durationMs/1000.0))+"</p>"
+        + "<h2>Summary</h2>"
+        + "<p><b>Severities:</b> "+sevSummary+"</p>"
+        + "<p><b>Risk:</b> "+riskSummary+"</p>"
+        + "<p><b>Telemetry (counts by category):</b><ul>"+tel1+"</ul>"
+        + "<b>Scanner timings:</b><ul>"+tel2+"</ul>"
+        + "<b>Preset params:</b><ul>"+tel3+"</ul>"
+        + (slowHtml.isBlank()? "" : "<b>Slow endpoints (by t5000):</b><ul>"+slowHtml+"</ul>")
         + "</p>"
-        + "<h2>Несоответствия контракту</h2><table><tr><th>Метод</th><th>Эндпоинт</th><th>Описание</th></tr>"+mism+"</table>"
-        + "<h2>Неописанные эндпоинты</h2><table><tr><th>Метод</th><th>Путь</th><th>Статус</th></tr>"+und+"</table>"
-        + "<h2>Уязвимости</h2><table><tr><th>Категория</th><th>Серьезность</th><th>Метод/Путь</th><th>OWASP Risk</th><th>Описание</th><th>Рекомендации</th><th>Детали</th></tr>"+issues+"</table>"
+        + "<h2>Contract mismatches</h2><table><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>"+mism+"</table>"
+        + "<h2>Undocumented endpoints</h2><table><tr><th>Method</th><th>Path</th><th>Status</th></tr>"+und+"</table>"
+        + "<h2>Vulnerabilities</h2><table><tr><th>Category</th><th>Severity</th><th>Method/Path</th><th>OWASP Risk</th><th>AI Severity</th><th>Description</th><th>AI Recommendation</th><th>Recommendation</th><th>Details</th></tr>"+issues+"</table>"
         + "</body></html>";
     }
 
@@ -113,10 +116,10 @@ public class HtmlTemplates {
                 if (t.has("status")) res += "Status: "+t.get("status").asInt()+"\n";
                 if (t.has("responseHeaders")) res += prettyKV(t.get("responseHeaders"));
                 if (t.has("responseBody")) res += "\n"+t.get("responseBody").asText();
-                return "<details><summary>Подробнее</summary><div><b>Запрос</b><pre>"+escape(req)+"</pre><b>Ответ</b><pre>"+escape(res)+"</pre><i>Трейс: "+escape(traceRef)+"</i></div></details>";
+                return "<details><summary>Details</summary><div><b>Request</b><pre>"+escape(req)+"</pre><b>Response</b><pre>"+escape(res)+"</pre><i>Trace: "+escape(traceRef)+"</i></div></details>";
             }
         } catch (Exception ignored) {}
-        return "<details><summary>Подробнее</summary><div><i>Трейс: "+escape(traceRef)+"</i></div></details>";
+        return "<details><summary>Details</summary><div><i>Trace: "+escape(traceRef)+"</i></div></details>";
     }
 
     private static String prettyKV(JsonNode obj){
@@ -165,11 +168,3 @@ public class HtmlTemplates {
         } catch (Exception e){ return 0L; }
     }
 }
-
-
-
-
-
-
-
-

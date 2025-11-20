@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.Response;
 import picocli.CommandLine;
+import ru.apidefender.cli.ai.AiAdvisor;
 import ru.apidefender.core.Config;
 import ru.apidefender.core.http.HttpClient;
 import ru.apidefender.core.log.JsonlLogger;
@@ -77,6 +78,15 @@ public class ScanCommand implements Callable<Integer> {
 
     @CommandLine.Option(names = "--telemetry-opt-in", description = "Разрешить отправку анонимной телеметрии", defaultValue = "false")
     boolean telemetryOptIn;
+
+    @CommandLine.Option(names = "--ai-enabled", description = "Enable AI enrichment for findings via OpenRouter", defaultValue = "false")
+    boolean aiEnabled;
+    @CommandLine.Option(names = "--ai-key-file", description = "Path to OpenRouter API key", defaultValue = "./api_key.txt")
+    Path aiKeyFile;
+    @CommandLine.Option(names = "--ai-model", description = "OpenRouter model id (e.g. openai/gpt-4o-mini)", defaultValue = "openai/gpt-4o-mini")
+    String aiModel;
+    @CommandLine.Option(names = "--ai-timeout", description = "Timeout for AI calls (e.g. 20s)", defaultValue = "20s")
+    String aiTimeout;
 
     private static JsonNode cachedSpecRoot;
 
@@ -329,13 +339,17 @@ public class ScanCommand implements Callable<Integer> {
                 new BolaIdorScanner(),
                 new InjectionScanner(),
                 new ExcessiveDataScanner(),
+                new PiiLeakScanner(),
+                new ChainedIdorScanner(),
                 new RateLimitScanner(),
                 new MassAssignmentScanner(),
                 new VerboseErrorsScanner(),
                 new BflaScanner(),
                 new HppScanner(),
                 new PaginationScanner(),
-                new MethodOverrideScanner()
+                new MethodOverrideScanner(),
+                new UndocumentedScanner(),
+                new GuidedDiscoveryScanner()
         );
         int idorMax = switch (pr) { case FAST -> 2; case AGGRESSIVE -> 12; default -> 6; };
         int injOps  = switch (pr) { case FAST -> 6; case AGGRESSIVE -> 30; default -> 15; };
@@ -395,6 +409,24 @@ public class ScanCommand implements Callable<Integer> {
                 if (si.description == null) si.description = "";
                 if (!si.description.contains("OWASP Risk:")) si.description += marker;
             } catch (Exception ignored) {}
+        }
+
+        if (aiEnabled) {
+            try {
+                Duration aiDur = parseDuration(aiTimeout);
+                if (aiKeyFile == null || !Files.exists(aiKeyFile)) {
+                    log.error("AI key file not found: " + String.valueOf(aiKeyFile), null);
+                } else {
+                    String key = Files.readString(aiKeyFile).trim();
+                    if (key.isBlank()) {
+                        log.error("AI key file is empty: " + aiKeyFile, null);
+                    } else {
+                        new AiAdvisor(key, aiModel, aiDur, maskSecrets, log).enrich(report.security);
+                    }
+                }
+            } catch (Exception e) {
+                log.error("AI enrichment failed", e);
+            }
         }
 
         ReportWriter writer = new ReportWriter();

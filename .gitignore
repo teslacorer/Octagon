@@ -5,6 +5,8 @@ api_key.md
 # Local outputs and logs
 out/
 *.log
+api_key.txt
+user_key.txt
 
 # Build artifacts
 apidefender_prompts_bundle.zip

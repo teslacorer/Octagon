@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
 public class PaginationScanner implements SPI {
     @Override
     public String getCategory() {
-        return "RateLimit";
+        return "Pagination";
     }
 
     @Override
@@ -56,8 +56,10 @@ public class PaginationScanner implements SPI {
                 try (Response r3 = ctx.http.request("GET", l5000, null, null)) {
                     t5000 = r3.receivedResponseAtMillis() - r3.sentRequestAtMillis();
                     c5000 = r3.code();
-                    boolean slow = t5000 > Math.max(1500, Math.max(t50, t500) * 5);
-                    boolean err = c5000 >= 500 || c5000 == 429;
+                    // если базовые запросы уже вернули ошибки/429 — считаем нерелевантным
+                    if (c50 >= 400 || c500 >= 400) continue;
+                    boolean slow = c5000 < 400 && t5000 > Math.max(1500, Math.max(t50, t500) * 5);
+                    boolean err = c5000 >= 500; // 429/5xx считаем DoS только при корректных базовых
                     if (slow || err) {
                         ReportModel.SecurityIssue si = new ReportModel.SecurityIssue();
                         si.id = UUID.randomUUID().toString();

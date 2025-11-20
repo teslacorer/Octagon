@@ -1,0 +1,1550 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "Заявки на кредит наличными",
+        "description": "Набор HTTP методов для обработки заявки на получение кредита",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "https://api.bankingapi.ru/api/rb/mssa/partner/hackathon/v1",
+            "description": "Адрес API в песочнице хакатона"
+        }
+    ],
+    "paths": {
+        "/applications": {
+            "post": {
+                "tags": [
+                    "partner-application-controller"
+                ],
+                "summary": "Сохранить данные по заявке",
+                "description": "Данный метод сохраняет данные по заявке и возвращает уникальный идетификатор заявки",
+                "operationId": "create",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApplicationData"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Успешное завершение работы сервиса",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreateResponse"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "X-RateLimit-Limit": {
+                                "description": "Лимит вызовов. Временное Окно лимита уточнить у поставщика API ключа X-TYK-API-KEY.",
+                                "schema": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            },
+                            "X-RateLimit-Remaining": {
+                                "description": "Оставшееся количество вызовов в временном окне. Временное Окно лимита уточнить у поставщика API ключа X-TYK-API-KEY.",
+                                "schema": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            },
+                            "X-RateLimit-Reset": {
+                                "description": "Время обнуления лимита вызовов в формате Unix Timestamp в миллисекундах.",
+                                "schema": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/TykErrorResponse"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        "headers": {
+                            "X-RateLimit-Limit": {
+                                "description": "Лимит вызовов. Временное Окно лимита уточнить у поставщика API ключа X-TYK-API-KEY.",
+                                "schema": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            },
+                            "X-RateLimit-Remaining": {
+                                "description": "Оставшееся количество вызовов в временном окне. Временное Окно лимита уточнить у поставщика API ключа X-TYK-API-KEY.",
+                                "schema": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            },
+                            "X-RateLimit-Reset": {
+                                "description": "Время обнуления лимита вызовов в формате Unix Timestamp в миллисекундах.",
+                                "schema": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            },
+                            "X-Generator": {
+                                "description": "Заголовок указывающий на сторону, сгенерировавшую ответ.",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TykErrorResponse"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "X-Generator": {
+                                "description": "Заголовок указывающий на сторону, сгенерировавшую ответ.",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TykErrorResponse"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "X-Generator": {
+                                "description": "Заголовок указывающий на сторону, сгенерировавшую ответ.",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/TykErrorResponse"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        "headers": {
+                            "X-RateLimit-Limit": {
+                                "description": "Лимит вызовов. Временное Окно лимита уточнить у поставщика API ключа X-TYK-API-KEY.",
+                                "schema": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            },
+                            "X-RateLimit-Remaining": {
+                                "description": "Оставшееся количество вызовов в временном окне. Временное Окно лимита уточнить у поставщика API ключа X-TYK-API-KEY.",
+                                "schema": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            },
+                            "X-RateLimit-Reset": {
+                                "description": "Время обнуления лимита вызовов в формате Unix Timestamp в миллисекундах.",
+                                "schema": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            },
+                            "X-Generator": {
+                                "description": "Заголовок указывающий на сторону, сгенерировавшую ответ.",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TykErrorResponse"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "X-Generator": {
+                                "description": "Заголовок указывающий на сторону, сгенерировавшую ответ.",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TykErrorResponse"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "X-Generator": {
+                                "description": "Заголовок указывающий на сторону, сгенерировавшую ответ.",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/TykErrorResponse"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        "headers": {
+                            "X-RateLimit-Limit": {
+                                "description": "Лимит вызовов. Временное Окно лимита уточнить у поставщика API ключа X-TYK-API-KEY.",
+                                "schema": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            },
+                            "X-RateLimit-Remaining": {
+                                "description": "Оставшееся количество вызовов в временном окне. Временное Окно лимита уточнить у поставщика API ключа X-TYK-API-KEY.",
+                                "schema": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            },
+                            "X-RateLimit-Reset": {
+                                "description": "Время обнуления лимита вызовов в формате Unix Timestamp в миллисекундах.",
+                                "schema": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            },
+                            "X-Generator": {
+                                "description": "Заголовок указывающий на сторону, сгенерировавшую ответ.",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TykErrorResponse"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "X-Generator": {
+                                "description": "Заголовок указывающий на сторону, сгенерировавшую ответ.",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TykErrorResponse"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "X-Generator": {
+                                "description": "Заголовок указывающий на сторону, сгенерировавшую ответ.",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "504": {
+                        "description": "Gateway Timeout",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TykErrorResponse"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "X-Generator": {
+                                "description": "Заголовок указывающий на сторону, сгенерировавшую ответ.",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/applications/{applicationId}": {
+            "get": {
+                "tags": [
+                    "partner-application-controller"
+                ],
+                "summary": "Проверить статус заявки",
+                "description": "Данный метод возвращает статус заявки",
+                "operationId": "check",
+                "parameters": [
+                    {
+                        "name": "applicationId",
+                        "in": "path",
+                        "description": "ID заявки (uuid)",
+                        "required": true,
+                        "schema": {
+                            "maxLength": 36,
+                            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                            "type": "string"
+                        },
+                        "example": "cd78543b-0aab-44ce-bb97-ce394e8ddb99"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешное завершение работы сервиса",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApplicationStatusResponse"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "X-RateLimit-Limit": {
+                                "description": "Лимит вызовов. Временное Окно лимита уточнить у поставщика API ключа X-TYK-API-KEY.",
+                                "schema": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            },
+                            "X-RateLimit-Remaining": {
+                                "description": "Оставшееся количество вызовов в временном окне. Временное Окно лимита уточнить у поставщика API ключа X-TYK-API-KEY.",
+                                "schema": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            },
+                            "X-RateLimit-Reset": {
+                                "description": "Время обнуления лимита вызовов в формате Unix Timestamp в миллисекундах.",
+                                "schema": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/TykErrorResponse"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        "headers": {
+                            "X-RateLimit-Limit": {
+                                "description": "Лимит вызовов. Временное Окно лимита уточнить у поставщика API ключа X-TYK-API-KEY.",
+                                "schema": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            },
+                            "X-RateLimit-Remaining": {
+                                "description": "Оставшееся количество вызовов в временном окне. Временное Окно лимита уточнить у поставщика API ключа X-TYK-API-KEY.",
+                                "schema": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            },
+                            "X-RateLimit-Reset": {
+                                "description": "Время обнуления лимита вызовов в формате Unix Timestamp в миллисекундах.",
+                                "schema": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            },
+                            "X-Generator": {
+                                "description": "Заголовок указывающий на сторону, сгенерировавшую ответ.",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TykErrorResponse"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "X-Generator": {
+                                "description": "Заголовок указывающий на сторону, сгенерировавшую ответ.",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TykErrorResponse"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "X-Generator": {
+                                "description": "Заголовок указывающий на сторону, сгенерировавшую ответ.",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/TykErrorResponse"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        "headers": {
+                            "X-RateLimit-Limit": {
+                                "description": "Лимит вызовов. Временное Окно лимита уточнить у поставщика API ключа X-TYK-API-KEY.",
+                                "schema": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            },
+                            "X-RateLimit-Remaining": {
+                                "description": "Оставшееся количество вызовов в временном окне. Временное Окно лимита уточнить у поставщика API ключа X-TYK-API-KEY.",
+                                "schema": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            },
+                            "X-RateLimit-Reset": {
+                                "description": "Время обнуления лимита вызовов в формате Unix Timestamp в миллисекундах.",
+                                "schema": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            },
+                            "X-Generator": {
+                                "description": "Заголовок указывающий на сторону, сгенерировавшую ответ.",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TykErrorResponse"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "X-Generator": {
+                                "description": "Заголовок указывающий на сторону, сгенерировавшую ответ.",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TykErrorResponse"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "X-Generator": {
+                                "description": "Заголовок указывающий на сторону, сгенерировавшую ответ.",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/TykErrorResponse"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        "headers": {
+                            "X-RateLimit-Limit": {
+                                "description": "Лимит вызовов. Временное Окно лимита уточнить у поставщика API ключа X-TYK-API-KEY.",
+                                "schema": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            },
+                            "X-RateLimit-Remaining": {
+                                "description": "Оставшееся количество вызовов в временном окне. Временное Окно лимита уточнить у поставщика API ключа X-TYK-API-KEY.",
+                                "schema": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            },
+                            "X-RateLimit-Reset": {
+                                "description": "Время обнуления лимита вызовов в формате Unix Timestamp в миллисекундах.",
+                                "schema": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            },
+                            "X-Generator": {
+                                "description": "Заголовок указывающий на сторону, сгенерировавшую ответ.",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TykErrorResponse"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "X-Generator": {
+                                "description": "Заголовок указывающий на сторону, сгенерировавшую ответ.",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TykErrorResponse"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "X-Generator": {
+                                "description": "Заголовок указывающий на сторону, сгенерировавшую ответ.",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "504": {
+                        "description": "Gateway Timeout",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TykErrorResponse"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "X-Generator": {
+                                "description": "Заголовок указывающий на сторону, сгенерировавшую ответ.",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "partner-application-controller"
+                ],
+                "summary": "Принять предложение",
+                "description": "Данный метод принимает предложение по заявке",
+                "operationId": "confirm",
+                "parameters": [
+                    {
+                        "name": "applicationId",
+                        "in": "path",
+                        "description": "ID заявки (uuid)",
+                        "required": true,
+                        "schema": {
+                            "maxLength": 36,
+                            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                            "type": "string"
+                        },
+                        "example": "cd78543b-0aab-44ce-bb97-ce394e8ddb99"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешное завершение работы сервиса",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "TykErrorResponse": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "maxLength": 1000,
+                        "type": "string",
+                        "title": "Описание ошибки"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "AdditionalData": {
+                "type": "object",
+                "properties": {
+                    "creditTarget": {
+                        "maxLength": 256,
+                        "type": "string",
+                        "description": "Цель кредита"
+                    },
+                    "preferredOffice": {
+                        "$ref": "#/components/schemas/PreferredOffice"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Дополнительные данные"
+            },
+            "AddressInfo": {
+                "required": [
+                    "house",
+                    "region",
+                    "street"
+                ],
+                "type": "object",
+                "properties": {
+                    "zip": {
+                        "maxLength": 6,
+                        "minLength": 6,
+                        "pattern": "\\d{6}",
+                        "type": "string",
+                        "description": "Индекс"
+                    },
+                    "region": {
+                        "$ref": "#/components/schemas/Region"
+                    },
+                    "district": {
+                        "maxLength": 50,
+                        "minLength": 0,
+                        "type": "string",
+                        "description": "Район"
+                    },
+                    "city": {
+                        "maxLength": 50,
+                        "minLength": 0,
+                        "type": "string",
+                        "description": "Город"
+                    },
+                    "locality": {
+                        "maxLength": 50,
+                        "minLength": 0,
+                        "type": "string",
+                        "description": "Населенный пункт"
+                    },
+                    "street": {
+                        "maxLength": 50,
+                        "minLength": 2,
+                        "type": "string",
+                        "description": "Улица"
+                    },
+                    "house": {
+                        "maxLength": 10,
+                        "minLength": 1,
+                        "type": "string",
+                        "description": "Дом"
+                    },
+                    "block": {
+                        "maxLength": 10,
+                        "minLength": 0,
+                        "type": "string",
+                        "description": "Строение"
+                    },
+                    "flat": {
+                        "maxLength": 10,
+                        "minLength": 0,
+                        "type": "string",
+                        "description": "Квартира"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Адрес"
+            },
+            "ApplicationData": {
+                "required": [
+                    "additionalData",
+                    "cashLoanProduct",
+                    "consents",
+                    "contactInfo",
+                    "educationType",
+                    "familyInfo",
+                    "mainIncomeInfo",
+                    "mainWork",
+                    "partnerApplicationId",
+                    "partnerName",
+                    "passportInfo",
+                    "personalInfo",
+                    "registrationAddressInfo",
+                    "residentialAddressInfo"
+                ],
+                "type": "object",
+                "properties": {
+                    "partnerName": {
+                        "maxLength": 255,
+                        "minLength": 4,
+                        "type": "string",
+                        "description": "Уникальное имя партнера"
+                    },
+                    "partnerApplicationId": {
+                        "maxLength": 255,
+                        "minLength": 6,
+                        "type": "string",
+                        "description": "Уникальный идентификатор анкеты в системе партнера"
+                    },
+                    "cashLoanProduct": {
+                        "$ref": "#/components/schemas/CashLoanProduct"
+                    },
+                    "personalInfo": {
+                        "$ref": "#/components/schemas/PersonalInfo"
+                    },
+                    "passportInfo": {
+                        "$ref": "#/components/schemas/PassportInfo"
+                    },
+                    "registrationAddressInfo": {
+                        "$ref": "#/components/schemas/AddressInfo"
+                    },
+                    "residentialAddressInfo": {
+                        "$ref": "#/components/schemas/AddressInfo"
+                    },
+                    "contactInfo": {
+                        "$ref": "#/components/schemas/ContactInfo"
+                    },
+                    "mainIncomeInfo": {
+                        "$ref": "#/components/schemas/IncomeInfo"
+                    },
+                    "additionalIncomeInfo": {
+                        "$ref": "#/components/schemas/IncomeInfo"
+                    },
+                    "educationType": {
+                        "type": "string",
+                        "description": "Образование : </br> BELOW_SECONDARY - Ниже среднего</br> SCHOOL - Среднее</br> SPECIALIZED_SCHOOL - Среднее специальное</br> INCOMPLETE_HIGHER_EDUCATION - Незаконченное высшее</br> HIGHER_EDUCATION - Высшее образование</br> SECOND_HIGHER_EDUCATION - Второе высшее</br> SCIENTIFIC_DEGREE - Ученая степень</br> MBA_DEGREE - Степень МВА</br>",
+                        "example": "HIGHER_EDUCATION",
+                        "enum": [
+                            "BELOW_SECONDARY",
+                            "SCHOOL",
+                            "SPECIALIZED_SCHOOL",
+                            "INCOMPLETE_HIGHER_EDUCATION",
+                            "HIGHER_EDUCATION",
+                            "SECOND_HIGHER_EDUCATION",
+                            "SCIENTIFIC_DEGREE",
+                            "MBA_DEGREE"
+                        ]
+                    },
+                    "familyInfo": {
+                        "$ref": "#/components/schemas/FamilyInfo"
+                    },
+                    "mainWork": {
+                        "$ref": "#/components/schemas/MainWork"
+                    },
+                    "consents": {
+                        "maxItems": 3,
+                        "minItems": 3,
+                        "type": "array",
+                        "description": "Согласия",
+                        "items": {
+                            "$ref": "#/components/schemas/Consent"
+                        }
+                    },
+                    "additionalData": {
+                        "$ref": "#/components/schemas/AdditionalData"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Данные по кредитной заявке"
+            },
+            "CashLoanProduct": {
+                "required": [
+                    "creditAmount",
+                    "creditPeriod",
+                    "productType"
+                ],
+                "type": "object",
+                "properties": {
+                    "productType": {
+                        "type": "string",
+                        "description": "Тип кредитного продукта : </br>KN - Кредит наличными</br>",
+                        "example": "KN",
+                        "enum": [
+                            "KN"
+                        ]
+                    },
+                    "creditAmount": {
+                        "maximum": 2000000000,
+                        "minimum": 40000,
+                        "type": "integer",
+                        "description": "Сумма кредита 'на руки' (в руб.) ",
+                        "example": 50000
+                    },
+                    "creditPeriod": {
+                        "maximum": 60,
+                        "minimum": 6,
+                        "type": "integer",
+                        "description": "Запрошенный срок кредита (в мес.)",
+                        "format": "int32",
+                        "example": 14
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Параметры продукта"
+            },
+            "Consent": {
+                "required": [
+                    "consentType",
+                    "isObtained",
+                    "obtainedDate"
+                ],
+                "type": "object",
+                "properties": {
+                    "consentType": {
+                        "type": "string",
+                        "description": "Тип согласия : </br> AGREEMENT_PERS - Согласие на обработку персональных данных</br> AGREEMENT_BKI - Согласие на предоставление данных в БКИ</br> AGREEMENT_MOBILE - Согласие на проверку на стороне мобильного оператора</br>",
+                        "enum": [
+                            "AGREEMENT_PERS",
+                            "AGREEMENT_MOBILE",
+                            "AGREEMENT_BKI"
+                        ]
+                    },
+                    "isObtained": {
+                        "type": "boolean",
+                        "description": "Признак согласия",
+                        "example": true
+                    },
+                    "obtainedDate": {
+                        "maxLength": 10,
+                        "minLength": 10,
+                        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+                        "type": "string",
+                        "description": "Дата сбора согласий",
+                        "format": "date",
+                        "example": "2020-06-29T00:00:00.000Z"
+                    },
+                    "endDate": {
+                        "maxLength": 10,
+                        "minLength": 10,
+                        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+                        "type": "string",
+                        "description": "Дата окончания согласий",
+                        "format": "date",
+                        "example": "2030-06-29T00:00:00.000Z"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Согласия"
+            },
+            "ContactInfo": {
+                "required": [
+                    "emailAddress",
+                    "phoneNumber"
+                ],
+                "type": "object",
+                "properties": {
+                    "phoneNumber": {
+                        "maxLength": 12,
+                        "minLength": 11,
+                        "pattern": "^(\\+7|8)\\s?(\\(\\d{3}\\)|\\d{3})\\s?\\d{3}(-?\\d{2}){2}$",
+                        "type": "string",
+                        "description": "Телефон в формате +74232487777 или 81232487777"
+                    },
+                    "emailAddress": {
+                        "maxLength": 150,
+                        "minLength": 5,
+                        "pattern": "^([\\w-]+(?:\\.[\\w-]+)*)@((?:[\\w-]+\\.)*\\w[\\w-]{0,66})\\.([a-z]{2,6}(?:\\.[a-z]{2})?)$",
+                        "type": "string",
+                        "description": "Электронная почта",
+                        "example": "example@example.ru"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Контактные данные"
+            },
+            "FamilyInfo": {
+                "required": [
+                    "maritalStatusType",
+                    "underageChildrenNumber"
+                ],
+                "type": "object",
+                "properties": {
+                    "maritalStatusType": {
+                        "type": "string",
+                        "description": "Семейное положение : </br> SINGLE - Холост/Не замужем</br> DIVORCED - В разводе</br> WIDOW - Вдовец/Вдова</br> MARRIED - Женат/Замужем</br> REMARRIAGE - Повторный брак</br> CIVIL_MARRIAGE - Гражданский брак</br> UNKNOWN -Не указано</br>",
+                        "example": "SINGLE",
+                        "enum": [
+                            "SINGLE",
+                            "DIVORCED",
+                            "WIDOW",
+                            "MARRIED",
+                            "REMARRIAGE",
+                            "CIVIL_MARRIAGE",
+                            "UNKNOWN"
+                        ]
+                    },
+                    "underageChildrenNumber": {
+                        "maximum": 20,
+                        "minimum": 0,
+                        "type": "integer",
+                        "description": "Дети до 18 лет",
+                        "format": "int32",
+                        "example": 2
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Семья"
+            },
+            "Fio": {
+                "required": [
+                    "firstName",
+                    "lastName"
+                ],
+                "type": "object",
+                "properties": {
+                    "lastName": {
+                        "maxLength": 50,
+                        "minLength": 2,
+                        "type": "string",
+                        "description": "Фамилия",
+                        "example": "Фамилия"
+                    },
+                    "firstName": {
+                        "maxLength": 50,
+                        "minLength": 2,
+                        "type": "string",
+                        "description": "Имя",
+                        "example": "Имя"
+                    },
+                    "patronymic": {
+                        "maxLength": 50,
+                        "minLength": 2,
+                        "type": "string",
+                        "description": "Отчество",
+                        "example": "Отчество"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "ФИО"
+            },
+            "IncomeInfo": {
+                "required": [
+                    "amount",
+                    "incomeType"
+                ],
+                "type": "object",
+                "properties": {
+                    "incomeType": {
+                        "type": "string",
+                        "description": "Тип дохода, BASIC - указывается для поля $.mainIncomeInfo.incomeType, </br> для поля  </br> $.additionalIncomeInfo.incomeType </br> указываются любые типы доходов кроме BASIC </br> описание доступных значений:  </br> BASIC - Доход по основному месту работы, </br> LEASING - Доходы от сдачи в аренду (после уплаты налогов) </br> ALIMONY - Алименты получаемые на детей </br> PENSION - Пенсия </br> SCHOLARSHIP - Стипендия </br> ADDITIONAL_WORK - Доход по дополнительному месту работы 1 </br> OTHER - Прочие доходы </br>",
+                        "example": "BASIC",
+                        "enum": [
+                            "BASIC",
+                            "LEASING",
+                            "ADDITIONAL_WORK",
+                            "ALIMONY",
+                            "PENSION",
+                            "SCHOLARSHIP",
+                            "OTHER"
+                        ]
+                    },
+                    "amount": {
+                        "maximum": 10000000,
+                        "minimum": 15000,
+                        "type": "integer",
+                        "description": "Сумма дохода (в руб.)",
+                        "example": 200000
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Информация о доходе"
+            },
+            "MainWork": {
+                "required": [
+                    "addressInfo",
+                    "companyInn",
+                    "companyName",
+                    "employmentType",
+                    "jobPositionCategoryType",
+                    "phoneNumber",
+                    "workingExperienceCurrentType",
+                    "workingExperienceType"
+                ],
+                "type": "object",
+                "properties": {
+                    "employmentType": {
+                        "type": "string",
+                        "description": "Тип занятости : </br> DERIVATIVE - Срочный</br> NO_DERIVATIVE - Без срока</br> INDIVIDUAL_BUSINESSMAN - Индивидуальный предприниматель</br> COMMISSION_AGREEMENT - Агент на комиссионном договоре</br> PRIVATE_PRACTICE - Частная практика</br> UNEMPLOYED - Безработный</br> PENSIONER - Пенсионер</br> SELF_EMPLOYED - Самозанятый</br>",
+                        "enum": [
+                            "DERIVATIVE",
+                            "NO_DERIVATIVE",
+                            "INDIVIDUAL_BUSINESSMAN",
+                            "COMMISSION_AGREEMENT",
+                            "PRIVATE_PRACTICE",
+                            "UNEMPLOYED",
+                            "PENSIONER",
+                            "SELF_EMPLOYED"
+                        ],
+                        "example": "DERIVATIVE"
+                    },
+                    "companyName": {
+                        "maxLength": 1000,
+                        "minLength": 4,
+                        "type": "string",
+                        "description": "Наименование работодателя",
+                        "example": "Почта России"
+                    },
+                    "companyInn": {
+                        "maxLength": 12,
+                        "minLength": 12,
+                        "pattern": "\\d{12}",
+                        "type": "string",
+                        "description": "ИНН работодателя",
+                        "example": "772756377812"
+                    },
+                    "phoneNumber": {
+                        "maxLength": 12,
+                        "minLength": 11,
+                        "pattern": "^(\\+7|8)\\s?(\\(\\d{3}\\)|\\d{3})\\s?\\d{3}(-?\\d{2}){2}$",
+                        "type": "string",
+                        "description": "Телефон в формате +74232487777 или 81232487777"
+                    },
+                    "workingExperienceType": {
+                        "type": "string",
+                        "description": "Общий стаж : </br> FROM_0_TO_1_YEARS - До 1 года</br> FROM_1_TO_3_YEARS - От 1 до 3 лет</br> FROM_3_TO_10_YEARS - От 3 до 10 лет</br> GREATER_THEN_10_YEARS - Более 10 лет</br>",
+                        "example": "FROM_1_TO_3_YEARS",
+                        "enum": [
+                            "FROM_0_TO_1_YEARS",
+                            "FROM_1_TO_3_YEARS",
+                            "FROM_3_TO_10_YEARS",
+                            "GREATER_THEN_10_YEARS"
+                        ]
+                    },
+                    "workingExperienceCurrentType": {
+                        "type": "string",
+                        "description": "Стаж на текущем месте работы : </br> PROBATION_PERIOD - Испытательный срок</br> FROM_3_TO_6_MONTHS - От 3 до 6 месяцев</br> FROM_6_TO_12_MONTHS - От 6 месяцев до 1 года</br> FROM_1_TO_2_YEAR - От 1 года до 2 лет</br> MORE_THAN_2_YEAR - Свыше 2 лет</br>",
+                        "example": "FROM_3_TO_6_MONTHS",
+                        "enum": [
+                            "PROBATION_PERIOD",
+                            "FROM_3_TO_6_MONTHS",
+                            "FROM_6_TO_12_MONTHS",
+                            "FROM_1_TO_2_YEAR",
+                            "MORE_THAN_2_YEAR"
+                        ]
+                    },
+                    "addressInfo": {
+                        "$ref": "#/components/schemas/AddressInfo"
+                    },
+                    "jobPositionCategoryType": {
+                        "type": "string",
+                        "description": "Категория занимаемой должности : </br>TOP_MANAGER - Высший  управленец/Высший чиновник</br>BUSINESS_OWNER - Владелец предприятия /Ген.Дир/ Гл.бух</br>QUALIFIE_SPECIALIST - Высококвалифицированный спе ц.</br>MILITARY_MAN - Военнослужащий</br>STATE_EMPLOYEE - Госслужащий </br>MIDDLE_MANAGER - Руководитель среднего звена</br>SPECIALIST - Спе циалист</br>SPORTSMAN - Спортсмен</br>SERVICE_PROVIDER - Работник сфер ы услуг</br>JUNIOR_MANAGER - Руководитель низшего звена</br>UNQUALIFIED_WORKER  - Неквалифицированный рабочий</br>FOREIGN_WORKER - Работники посольс тв, иностранных компаний, не имеющих представительства на территории Р Ф</br>PRIVATE_PRACTICE - Частная практика/ИП</br>LAND_LORD - Арендодат ель</br>OWNER_FOUNDER - Собственник / Учредитель</br>LEADER_OF_ORGANIZATION  - Руководитель организации (первое лицо организации)</br>HEAD_OF_INTERNAL_UNIT  - Руководитель внутреннего подразделения организации</br>QUALIFIED_SPECIALIST  - Квалифицированный специалист</br>UNSKILLED_SPECIALIST - Специалист  не требующий квалификации</br>OTHER - Иное</br>",
+                        "example": "TOP_MANAGER",
+                        "enum": [
+                            "TOP_MANAGER",
+                            "BUSINESS_OWNER",
+                            "QUALIFIE_SPECIALIST",
+                            "MILITARY_MAN",
+                            "STATE_EMPLOYEE",
+                            "MIDDLE_MANAGER",
+                            "SPECIALIST",
+                            "SPORTSMAN",
+                            "SERVICE_PROVIDER",
+                            "JUNIOR_MANAGER",
+                            "UNQUALIFIED_WORKER",
+                            "FOREIGN_WORKER",
+                            "PRIVATE_PRACTICE",
+                            "LAND_LORD",
+                            "OWNER_FOUNDER",
+                            "LEADER_OF_ORGANIZATION",
+                            "HEAD_OF_INTERNAL_UNIT",
+                            "QUALIFIED_SPECIALIST",
+                            "UNSKILLED_SPECIALIST",
+                            "OTHER"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Трудовая деятельность"
+            },
+            "PassportInfo": {
+                "required": [
+                    "issueCode",
+                    "issueDate",
+                    "issueName",
+                    "number",
+                    "series"
+                ],
+                "type": "object",
+                "properties": {
+                    "series": {
+                        "maxLength": 4,
+                        "minLength": 4,
+                        "pattern": "\\d{4}",
+                        "type": "string",
+                        "description": "Серия",
+                        "example": "6405"
+                    },
+                    "number": {
+                        "maxLength": 6,
+                        "minLength": 6,
+                        "pattern": "\\d{6}",
+                        "type": "string",
+                        "description": "Номер",
+                        "example": "992345"
+                    },
+                    "issueName": {
+                        "maxLength": 500,
+                        "minLength": 20,
+                        "type": "string",
+                        "description": "Кем выдан",
+                        "example": "Отделом милиции-1 УВД гор. Ангарска Иркутской обл."
+                    },
+                    "issueDate": {
+                        "maxLength": 10,
+                        "minLength": 10,
+                        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+                        "type": "string",
+                        "description": "Дата выдачи",
+                        "format": "date",
+                        "example": "2020-06-29T00:00:00.000Z"
+                    },
+                    "issueCode": {
+                        "maxLength": 7,
+                        "minLength": 7,
+                        "pattern": "^\\d{3}-\\d{3}$",
+                        "type": "string",
+                        "description": "Код подразделения",
+                        "example": "456-089"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Паспортные данные"
+            },
+            "PersonalInfo": {
+                "required": [
+                    "birthDate",
+                    "birthPlace",
+                    "fio",
+                    "genderType"
+                ],
+                "type": "object",
+                "properties": {
+                    "fio": {
+                        "$ref": "#/components/schemas/Fio"
+                    },
+                    "genderType": {
+                        "type": "string",
+                        "description": "Пол",
+                        "example": "MALE",
+                        "enum": [
+                            "NOT_SPECIFIED",
+                            "MALE",
+                            "FEMALE"
+                        ]
+                    },
+                    "birthDate": {
+                        "maxLength": 10,
+                        "minLength": 10,
+                        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+                        "type": "string",
+                        "description": "Дата рождения",
+                        "format": "date",
+                        "example": "2020-06-29T00:00:00.000Z"
+                    },
+                    "birthPlace": {
+                        "maxLength": 400,
+                        "minLength": 2,
+                        "type": "string",
+                        "description": "Место рождения"
+                    },
+                    "wasLastNameChanged": {
+                        "type": "boolean",
+                        "description": "Ранее у меня было другое ФИО",
+                        "example": false
+                    },
+                    "previousFio": {
+                        "$ref": "#/components/schemas/Fio"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Персональные данные"
+            },
+            "PreferredOffice": {
+                "required": [
+                    "address",
+                    "name",
+                    "number",
+                    "officeId",
+                    "region"
+                ],
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "maxLength": 255,
+                        "minLength": 4,
+                        "type": "string",
+                        "description": "Название офиса"
+                    },
+                    "address": {
+                        "maxLength": 255,
+                        "minLength": 4,
+                        "type": "string",
+                        "description": "Адрес офиса"
+                    },
+                    "metro": {
+                        "maxLength": 255,
+                        "minLength": 0,
+                        "type": "string",
+                        "description": "Метро"
+                    },
+                    "workingHours": {
+                        "maxLength": 255,
+                        "minLength": 0,
+                        "type": "string",
+                        "description": "Режим работы офиса"
+                    },
+                    "coordinates": {
+                        "maxLength": 255,
+                        "minLength": 0,
+                        "type": "string",
+                        "description": "Координаты офиса"
+                    },
+                    "number": {
+                        "maxLength": 255,
+                        "minLength": 0,
+                        "type": "string",
+                        "description": "Номер офиса"
+                    },
+                    "officeId": {
+                        "maxLength": 255,
+                        "minLength": 0,
+                        "type": "string",
+                        "description": "Идентификатор офиса"
+                    },
+                    "addressKladr": {
+                        "maxLength": 255,
+                        "minLength": 0,
+                        "type": "string",
+                        "description": "Адрес по КЛАДР"
+                    },
+                    "worksOnWeekends": {
+                        "type": "boolean",
+                        "description": "Работает в выходные"
+                    },
+                    "opensOnHolidays": {
+                        "type": "boolean",
+                        "description": "Работает в праздничные дни"
+                    },
+                    "region": {
+                        "$ref": "#/components/schemas/Region"
+                    },
+                    "regionOfObtaining": {
+                        "maxLength": 255,
+                        "minLength": 0,
+                        "type": "string",
+                        "description": "Регион получения"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Офис получения кредита"
+            },
+            "Region": {
+                "type": "string",
+                "description": "Регион : ALTAY - \"Алтайский край\",\nKRASNODAR - \"Краснодарский край\",\nKRASNOYARSK - \"Красноярский край\",\nPRIMOR - \"Приморский край\",\nSTAVROPOL - \"Ставропольский край\",\nKHABAROVSK - \"Хабаровский край\",\nAMUR - \"Амурская область\",\nARKHANGELSK - \"Архангельская область\",\nASTRAKHAN - \"Астраханская область\",\nBELGOROD - \"Белгородская область\",\nBRYANSK - \"Брянская область\",\nVLADIMIR - \"Владимирская область\",\nVOLGOGRAD - \"Волгоградская область\",\nVOLOGDA - \"Вологодская область\",\nVORONEZH - \"Воронежская область\",\nNIZHNYNOVGOROD - \"Нижегородская область\",\nIVANOVO - \"Ивановская область\",\nIRKUTSK - \"Иркутская область\",\nINGUSHETIA - \"Республика Ингушетия\",\nKALININGRAD - \"Калининградская область\",\nTVER - \"Тверская область\",\nKALUGA - \"Калужская область\",\nKAMCHATKA - \"Камчатский край\",\nKEMEROVO - \"Кемеровская область\",\nKIROV - \"Кировская область\",\nKOSTROMA - \"Костромская область\",\nSAMARA - \"Самарская область\",\nKURGAN - \"Курганская область\",\nKURSK - \"Курская область\",\nSTPETERSBURG - \"г. Санкт-Петербург\",\nLENINGRADREGION - \"Ленинградская область\",\nLIPETSK - \"Липецкая область\",\nMAGADAN - \"Магаданская область\",\nMOSCOW - \"г. Москва\",\nMOSCOWREGION - \"Московская область\",\nMURMANSK - \"Мурманская область\",\nNOVGOROD - \"Новгородская область\",\nNOVOSIBIRSK - \"Новосибирская область\",\nOMSK - \"Омская область\",\nORENBURG - \"Оренбургская область\",\nOREL - \"Орловская область\",\nPENZA - \"Пензенская область\",\nPERM - \"Пермский край\",\nPSKOV - \"Псковская область\",\nROSTOV - \"Ростовская область\",\nRYAZAN - \"Рязанская область\",\nSARATOV - \"Саратовская область\",\nSAKHALIN - \"Сахалинская область\",\nSVERDLOVSK - \"Свердловская область\",\nSMOLENSK - \"Смоленская область\",\nTAMBOV - \"Тамбовская область\",\nTOMSK - \"Томская область\",\nTULA - \"Тульская область\",\nTYUMEN - \"Тюменская область\",\nULYANOVSK - \"Ульяновская область\",\nCHELYABINSK - \"Челябинская область\",\nTRANS_BAIKAL - \"Забайкальский край\",\nCHUKOTKAAUTONOMOUS - \"Чукотский автономный округ\",\nYAROSLAVL - \"Ярославская область\",\nADYGEA - \"Республика Адыгея (Адыгея)\",\nBASHKORTOSTAN - \"Республика Башкортостан\",\nBURYATIA - \"Республика Бурятия\",\nDAGESTAN - \"Республика Дагестан\",\nKABARDINOBALKAR - \"Кабардино-Балкарская Республика\",\nALTAI - \"Республика Алтай\",\nKALMYKIA - \"Республика Калмыкия\",\nKARELIA - \"Республика Карелия\",\nKOMI - \"Республика Коми\",\nMARIEL - \"Республика Марий-Эл\",\nMORDOVIA - \"Мордовская Республика\",\nNORTHOSSETIAALANIA - \"Республика Северная Осетия-Алания\",\nKARACHAYCHERKESSIA - \"Республика Карачаево-Черкесская\",\nTATARSTAN - \"Республика Татарстан (Татарстан)\",\nTYVA - \"Республика Тыва\",\nUDMURTIA - \"Удмуртская Республика\",\nKHAKASSIA - \"Республика Хакассия\",\nCHECHEN - \"Чеченская Республика\",\nCHUVASHIA - \"Чувашская Республика  - Чувашия\",\nYAKUTIA - \"Республика Саха (Якутия)\",\nJEWISHAUTONOMOUS - \"Еврейская автономная область\",\nKHANTYMANSI - \"Ханты-мансийский автономный округ\",\nYAMALNENETS - \"Ямало-ненецкий автономный округ\",\nCRIMEA - \"Республика Крым\",\nSEVASTOPOL - \"Город федерального значения Севастополь\",\nNOTSPECIFIED - \"Не определен\",\nBAIKONUR - \"Байконур\",\nNENETS  - \"Ненецкий автономный округ\"",
+                "enum": [
+                    "ALTAY",
+                    "KRASNODAR",
+                    "KRASNOYARSK",
+                    "PRIMOR",
+                    "STAVROPOL",
+                    "KHABAROVSK",
+                    "AMUR",
+                    "ARKHANGELSK",
+                    "ASTRAKHAN",
+                    "BELGOROD",
+                    "BRYANSK",
+                    "VLADIMIR",
+                    "VOLGOGRAD",
+                    "VOLOGDA",
+                    "VORONEZH",
+                    "NIZHNYNOVGOROD",
+                    "IVANOVO",
+                    "IRKUTSK",
+                    "INGUSHETIA",
+                    "KALININGRAD",
+                    "TVER",
+                    "KALUGA",
+                    "KAMCHATKA",
+                    "KEMEROVO",
+                    "KIROV",
+                    "KOSTROMA",
+                    "SAMARA",
+                    "KURGAN",
+                    "KURSK",
+                    "STPETERSBURG",
+                    "LENINGRADREGION",
+                    "LIPETSK",
+                    "MAGADAN",
+                    "MOSCOW",
+                    "MOSCOWREGION",
+                    "MURMANSK",
+                    "NOVGOROD",
+                    "NOVOSIBIRSK",
+                    "OMSK",
+                    "ORENBURG",
+                    "OREL",
+                    "PENZA",
+                    "PERM",
+                    "PSKOV",
+                    "ROSTOV",
+                    "RYAZAN",
+                    "SARATOV",
+                    "SAKHALIN",
+                    "SVERDLOVSK",
+                    "SMOLENSK",
+                    "TAMBOV",
+                    "TOMSK",
+                    "TULA",
+                    "TYUMEN",
+                    "ULYANOVSK",
+                    "CHELYABINSK",
+                    "TRANS_BAIKAL",
+                    "CHUKOTKAAUTONOMOUS",
+                    "YAROSLAVL",
+                    "ADYGEA",
+                    "BASHKORTOSTAN",
+                    "BURYATIA",
+                    "DAGESTAN",
+                    "KABARDINOBALKAR",
+                    "ALTAI",
+                    "KALMYKIA",
+                    "KARELIA",
+                    "KOMI",
+                    "MARIEL",
+                    "MORDOVIA",
+                    "NORTHOSSETIAALANIA",
+                    "KARACHAYCHERKESSIA",
+                    "TATARSTAN",
+                    "TYVA",
+                    "UDMURTIA",
+                    "KHAKASSIA",
+                    "CHECHEN",
+                    "CHUVASHIA",
+                    "YAKUTIA",
+                    "JEWISHAUTONOMOUS",
+                    "KHANTYMANSI",
+                    "YAMALNENETS",
+                    "CRIMEA",
+                    "SEVASTOPOL",
+                    "BAIKONUR",
+                    "NENETS",
+                    "NOTSPECIFIED"
+                ],
+                "example": "ALTAY"
+            },
+            "ErrorResponse": {
+                "required": [
+                    "error",
+                    "message"
+                ],
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "maxLength": 500,
+                        "minLength": 1,
+                        "type": "string",
+                        "description": "код ошибки"
+                    },
+                    "message": {
+                        "maxLength": 1000,
+                        "minLength": 1,
+                        "type": "string",
+                        "description": "описание ошибки"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Сообщение с ошибкой"
+            },
+            "CreateResponse": {
+                "required": [
+                    "applicationId"
+                ],
+                "type": "object",
+                "properties": {
+                    "applicationId": {
+                        "maxLength": 36,
+                        "minLength": 36,
+                        "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+                        "type": "string",
+                        "description": "Уникальный идентификатор заявки",
+                        "example": "cd78543b-0aab-44ce-bb97-ce394e8ddb99"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Ответ в случаии успешного сохранения заявки"
+            },
+            "ApplicationStatusResponse": {
+                "required": [
+                    "status"
+                ],
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "description": "Статус заявки : </br>PROCESSING - в обработке</br> REJECTED - от казано</br> PRE_APPROVED - предварительно одобрено</br>",
+                        "example": "PRE_APPROVED",
+                        "enum": [
+                            "PROCESSING",
+                            "REJECTED",
+                            "PRE_APPROVED"
+                        ]
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Ответ содержащий статус заявки"
+            }
+        },
+        "responses": {
+            "BadRequest": {
+                "description": "Ошибка валидации запроса",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "NotFound": {
+                "description": "Запрашеваемый ресурс не найден",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "InternalServerError": {
+                "description": "Внутреняя ошибка сервиса",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "EpaAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    }
+}

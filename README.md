@@ -196,3 +196,13 @@ JSON-отчет содержит: метаданные запуска, несо�
 - Опция --safety-skip-delete предотвращает выполнение потенциально опасных DELETE (по умолчанию включено).
 
 ---
+## AI в Docker
+- Для обогащения отчета рекомендациями ИИ запустите контейнер с дополнительным монтированием ключа: ./api_key.txt -> /secrets/api_key.txt.
+- Пример (fast preset, PowerShell):
+  docker run --rm `
+    -v "${PWD}/openapi.json:/app/specs/openapi.json" `
+    -v "${PWD}/token.jwt:/secrets/token.jwt" `
+    -v "${PWD}/api_key.txt:/secrets/api_key.txt" `
+    -v "${PWD}/out:/out" `
+    apidefender:local scan --preset fast --openapi /app/specs/openapi.json --token-file /secrets/token.jwt --ai-enabled --ai-key-file /secrets/api_key.txt --report-html /out/report.html --report-pdf /out/report.pdf --report-json /out/report.json --save-traces /out/traces --log-file /out/scan.log
+- Параметры: --ai-model (по умолчанию openai/gpt-4o-mini), --ai-timeout (по умолчанию 20s).
