@@ -1,208 +1,367 @@
-﻿# API Defender (Java 21, CLI)
+# API Defender (Java 21, CLI)
 
-Инструмент динамического тестирования безопасности API на основе спецификаций OpenAPI и набора проверок OWASP API Security. Поставляется как CLI и Docker-образ. Формирует подробные отчеты HTML, PDF и JSON, а также сохраняет трассы запросов и ответов.
+API Defender — консольный и Docker‑сканер безопасности для REST API, работающий по спецификациям OpenAPI 3 и набору проверок, основанных на OWASP API Security.  
+Он проверяет контракт, обнаруживает скрытые эндпоинты, ищет типичные уязвимости (CORS, слабая авторизация, BOLA/IDOR, PII‑утечки и т.д.), считает риск по OWASP Risk Rating и формирует отчёты в форматах **HTML / PDF / JSON** с детальными трассами запросов.
 
-Основные сценарии использования:
-- Быстрая проверка API по OpenAPI на соответствие контракту (коды, Content-Type, схемы).
-- Обнаружение недокументированных эндпоинтов (discovery).
-- Набор встроенных сканеров: заголовки безопасности, CORS, слабая аутентификация, инъекции, rate limit, BOLA/IDOR, BFLA, HPP, Mass Assignment, Verbose Errors, Pagination и др.
-- Автоматический расчет риска OWASP Risk Rating для каждой находки.
-
----
-
-## Быстрый старт (Docker)
-
-1) Сборка образа:
-
-    docker build -t apidefender:local -f docker/Dockerfile .
-
-2) Запуск (Windows PowerShell):
-
-    docker run --rm \
-      -v "<HOST_CWD>/openapi.json:/app/specs/openapi.json" \
-      -v "<HOST_CWD>/token.jwt:/secrets/token.jwt" \
-      -v "<HOST_CWD>/out:/out" \
-      apidefender:local scan \
-      --openapi /app/specs/openapi.json \
-      --token-file /secrets/token.jwt \
-      --base-url https://api.example.com/ \
-      --preset full \
-      --timeout 5m \
-      --report-html /out/report.html \
-      --report-pdf /out/report.pdf \
-      --report-json /out/report.json \
-      --save-traces /out/traces \
-      --log-file /out/scan.log \
-      --log-level info
-
-3) Запуск (Linux/macOS, bash/zsh):
-
-    docker run --rm \
-      -v "<HOST_CWD>/openapi.json:/app/specs/openapi.json" \
-      -v "<HOST_CWD>/token.jwt:/secrets/token.jwt" \
-      -v "<HOST_CWD>/out:/out" \
-      apidefender:local scan \
-      --openapi /app/specs/openapi.json \
-      --token-file /secrets/token.jwt \
-      --base-url https://api.example.com/ \
-      --preset full \
-      --timeout 5m \
-      --report-html /out/report.html \
-      --report-pdf /out/report.pdf \
-      --report-json /out/report.json \
-      --save-traces /out/traces \
-      --log-file /out/scan.log \
-      --log-level info
-
-Пример быстрой проверки с агрессивными параметрами:
-
-    docker run --rm \
-      -v "<HOST_CWD>/openapi.json:/app/specs/openapi.json" \
-      -v "<HOST_CWD>/token.jwt:/secrets/token.jwt" \
-      -v "<HOST_CWD>/out:/out" \
-      apidefender:local scan \
-      --openapi /app/specs/openapi.json \
-      --token-file /secrets/token.jwt \
-      --base-url https://api.example.com/ \
-      --preset aggressive \
-      --timeout 5m \
-      --public-path /,/status,/health \
-      --allow-cors-wildcard-public \
-      --report-html /out/report_check_fast.html \
-      --report-pdf /out/report_check_fast.pdf \
-      --report-json /out/report_check_fast.json \
-      --save-traces /out/traces_check_fast \
-      --log-file /out/scan_check_fast.log \
-      --log-level info \
-      --safety-skip-delete \
-      --exploit-depth med \
-      --max-exploit-ops 40
+Основные возможности:
+- Контрактные проверки API по OpenAPI: статусы ответов, `Content-Type`, JSON‑схемы, обязательные заголовки.
+- Автоматическое обнаружение неописанных эндпоинтов (undocumented / discovery).
+- Набор прикладных сканеров:
+  - CORS, Security Headers.
+  - WeakAuth (слабая аутентификация).
+  - BOLA/IDOR (доступ к чужим ресурсам по идентификатору).
+  - BFLA, HPP, Pagination, Method Override.
+  - RateLimit (отсутствие/слабые лимиты).
+  - ExcessiveData (избыточные данные относительно OpenAPI).
+  - PIILeak (утечка PII / бизнес‑критичных данных, например балансов).
+  - MassAssignment, VerboseErrors и др.
+- Автоматическая оценка риска по OWASP Risk Rating для каждой найденной проблемы.
+- Опциональное AI‑обогащение выводов (модель `x-ai/grok-4.1-fast` через OpenRouter):
+  - уточнение критичности (0–10),
+  - русскоязычные рекомендации по устранению.
 
 ---
 
-## Локальная сборка и запуск (без Docker)
+## Быстрый старт в Docker
 
-Требуется Java 21 и Maven 3.9+.
+### 1. Сборка образа
 
-    mvn -DskipTests -pl apidefender-cli -am package
-    java -jar apidefender-cli/target/apidefender-cli-*.jar scan \
-      --openapi ./openapi.json \
-      --token-file ./token.jwt \
-      --base-url https://api.example.com/ \
-      --preset full
+```bash
+docker build -t apidefender:local -f docker/Dockerfile .
+```
+
+### 2. Базовый прогон (Windows PowerShell)
+
+В каталоге, где лежат `openapi.json`, `token.jwt` и папка `out`:
+
+```powershell
+docker run --rm `
+  -v "${PWD}/openapi.json:/app/specs/openapi.json" `
+  -v "${PWD}/token.jwt:/secrets/token.jwt" `
+  -v "${PWD}/out:/out" `
+  apidefender:local scan `
+  --openapi /app/specs/openapi.json `
+  --token-file /secrets/token.jwt `
+  --base-url https://api.example.com/ `
+  --preset full `
+  --timeout 5m `
+  --report-html /out/report.html `
+  --report-pdf /out/report.pdf `
+  --report-json /out/report.json `
+  --save-traces /out/traces `
+  --log-file /out/scan.log `
+  --log-level info
+```
+
+### 3. Базовый прогон (Linux/macOS, bash/zsh)
+
+```bash
+docker run --rm \
+  -v "$PWD/openapi.json:/app/specs/openapi.json" \
+  -v "$PWD/token.jwt:/secrets/token.jwt" \
+  -v "$PWD/out:/out" \
+  apidefender:local scan \
+  --openapi /app/specs/openapi.json \
+  --token-file /secrets/token.jwt \
+  --base-url https://api.example.com/ \
+  --preset full \
+  --timeout 5m \
+  --report-html /out/report.html \
+  --report-pdf /out/report.pdf \
+  --report-json /out/report.json \
+  --save-traces /out/traces \
+  --log-file /out/scan.log \
+  --log-level info
+```
+
+### 4. Агрессивный прогон (больше проверок)
+
+```powershell
+docker run --rm `
+  -v "${PWD}/openapi.json:/app/specs/openapi.json" `
+  -v "${PWD}/token.jwt:/secrets/token.jwt" `
+  -v "${PWD}/out:/out" `
+  apidefender:local scan `
+  --openapi /app/specs/openapi.json `
+  --token-file /secrets/token.jwt `
+  --base-url https://api.example.com/ `
+  --preset aggressive `
+  --timeout 5m `
+  --public-path /,/status,/health `
+  --allow-cors-wildcard-public `
+  --report-html /out/report_aggr.html `
+  --report-pdf /out/report_aggr.pdf `
+  --report-json /out/report_aggr.json `
+  --save-traces /out/traces_aggr `
+  --log-file /out/scan_aggr.log `
+  --log-level info `
+  --safety-skip-delete `
+  --exploit-depth med `
+  --max-exploit-ops 40
+```
+
+> При каждом запуске CLI очищает старые файлы в каталоге `/out`, чтобы результаты не смешивались.
+
+---
+
+## Локальный запуск без Docker
+
+Требования:
+- Java 21,
+- Maven 3.9+.
+
+Сборка и запуск:
+
+```bash
+mvn -DskipTests -pl apidefender-cli -am package
+java -jar apidefender-cli/target/apidefender-cli-*.jar scan \
+  --openapi ./openapi.json \
+  --token-file ./token.jwt \
+  --base-url https://api.example.com/ \
+  --preset full
+```
 
 ---
 
 ## Параметры CLI
 
-- --openapi <path> — путь к спецификации OpenAPI (JSON/YAML). По умолчанию: /app/specs/openapi.json.
-- --base-url <url> — базовый URL целевого API (если не указан, берется из servers[0] спецификации, иначе http://localhost:8080).
-- --token-file <path> (обяз.) — путь к файлу с JWT токеном (строка Bearer добавляется автоматически).
-- --preset <fast|full|aggressive> — набор интенсивности проверок. По умолчанию: full.
-- --timeout <dur> — общий таймаут сканирования (например, 30s, 5m, 1h). По умолчанию: 5m.
-- --concurrency <N> — число потоков (по умолчанию: auto = max(2, CPU)).
-- --report-html <path> — путь к HTML-отчету (по умолчанию: /out/report.html).
-- --report-pdf <path> — путь к PDF-отчету (по умолчанию: /out/report.pdf).
-- --report-json <path> — путь к JSON-отчету (по умолчанию: /out/report.json).
-- --save-traces <dir> — директория для сохранения трасс запросов и ответов (по умолчанию: /out/traces).
-- --log-file <path> — путь к JSONL логу (по умолчанию: /out/scan.log).
-- --log-level <info|debug> — уровень логирования (по умолчанию: info).
-- --discover-undocumented <true|false> — искать недокументированные эндпоинты (по умолчанию: true).
-- --strict-contract <true|false> — строгая проверка соответствия контракту (по умолчанию: true).
-- --public-path <csv> — список публичных префиксов путей (через запятую), влияет на CORS-проверки.
-- --allow-cors-wildcard-public <true|false> — разрешить * в ACAO только на публичных путях (по умолчанию: true).
-- --exploit-depth <low|med|high> — глубина попыток эксплуатации (по умолчанию зависит от пресета: fast=low, full=med, aggressive=high).
-- --max-exploit-ops <N> — лимит попыток эксплуатации (по умолчанию: 40).
-- --safety-skip-delete <true|false> — пропускать опасные операции DELETE (по умолчанию: true).
-- --debug <true|false> — добавить подробный вывод в лог (по умолчанию: false).
-- --mask-secrets <true|false> — маскировать секреты (JWT, токены) в трассах и логах (по умолчанию: true).
-- --telemetry-endpoint <url> — URL для отправки анонимной телеметрии (опционально).
-- --telemetry-opt-in <true|false> — включить отправку анонимной телеметрии (по умолчанию: false).
+Все параметры задаются команде `scan`:
 
-Производные параметры (задаются пресетом):
-- idorMax — глубина проверок BOLA/IDOR (fast=2, full=6, aggressive=12).
-- injectionOps — число payload-попыток для инъекций (fast=6, full=15, aggressive=30).
-- rateBurst — серия запросов для проверки rate limit (fast=5, full=15, aggressive=40).
+- `--openapi <path>` – путь к спецификации OpenAPI (JSON/YAML).  
+  По умолчанию в Docker: `/app/specs/openapi.json`.
+- `--base-url <url>` – базовый URL целевого API.  
+  Если не указан, берётся `servers[0].url` из OpenAPI, иначе `http://localhost:8080`.
+- `--token-file <path>` (обязательный) – файл с JWT‑токеном (подставляется в `Authorization: Bearer ...`).  
+- `--preset <fast|full|aggressive>` – профиль интенсивности:  
+  - `fast` – быстрый чек, минимальный набор запросов;
+  - `full` – баланс скорости и глубины;
+  - `aggressive` – максимум проверок и эвристик.
+- `--timeout <dur>` – общий таймаут сканирования (например, `30s`, `5m`, `1h`). По умолчанию: `5m`.
+- `--concurrency <N>` – число параллельных потоков:  
+  - если не указано, выбирается автоматически (в aggressive сейчас 2 потока для снижения нагрузки).
+- `--report-html <path>` – путь к HTML‑отчёту (по умолчанию `/out/report.html`).
+- `--report-pdf <path>` – путь к PDF‑отчёту (по умолчанию `/out/report.pdf`).
+- `--report-json <path>` – путь к JSON‑отчёту (по умолчанию `/out/report.json`).
+- `--save-traces <dir>` – каталог для raw‑трейсов запросов/ответов (по умолчанию `/out/traces`).
+- `--log-file <path>` – JSONL‑лог сканирования (по умолчанию `/out/scan.log`).
+- `--log-level <info|debug>` – уровень подробности логов.
+- `--discover-undocumented` – включить сканеры discovery (по умолчанию `true`).
+- `--strict-contract` – строгая проверка контракта (mismatch по статусам, заголовкам, схемам).
+- `--public-path <list>` – список явно публичных путей (через запятую), влияет на некоторые проверки CORS/WeakAuth.
+- `--allow-cors-wildcard-public` – разрешить `Access-Control-Allow-Origin: *` только на публичных путях (по умолчанию `true`).
+- `--exploit-depth <low|med|high>` – глубина агрессивных проверок (по умолчанию зависит от пресета).
+- `--max-exploit-ops <N>` – общий лимит «агрессивных» операций (по умолчанию `40`).
+- `--safety-skip-delete` – запрет выполнять реальные `DELETE`‑запросы в агрессивных проверках.
+- `--debug` – включить debug‑лог (дополнительные детали по каждому сканеру).
+- `--mask-secrets` – маскировать секреты (JWT/токены/PII) в логах и отчётах (по умолчанию `true`).
+- `--telemetry-endpoint <url>` / `--telemetry-opt-in` – опциональная отправка анонимной статистики (кол‑во запросов, длительность сканеров) на внешний endpoint.
 
----
+### Параметры AI
 
-## Выходные артефакты
+- `--ai-enabled` – включить AI‑обогащение находок через OpenRouter.
+- `--ai-key-file <path>` – путь к файлу с API‑ключом OpenRouter (по умолчанию `./api_key.txt`).  
+  В Docker чаще монтируется как `/secrets/api_key.txt`.
+- `--ai-model <id>` – идентификатор модели OpenRouter.  
+  По умолчанию: `x-ai/grok-4.1-fast`.
+- `--ai-timeout <dur>` – таймаут для AI‑запросов (например, `20s`). По умолчанию: `20s`.
 
-- Отчеты: report.html, report.pdf, report.json — в каталоге, заданном через --report-* (по умолчанию /out).
-- Лог сканирования: scan.log — JSONL-формат (одно событие на строку).
-- Трассы: директория traces/ — JSON с полными данными запроса и ответа. Маскирование секретов включается опцией --mask-secrets.
+AI получает список найденных уязвимостей (без секретов), возвращает для каждой:
+- числовую оценку критичности `severity_0_10`,
+- русскоязычную рекомендацию `recommendation_ru`.
 
-JSON-отчет содержит: метаданные запуска, несоответствия контракту, список уязвимостей (категория, описание, рекомендация, риск), телеметрию.
-
----
-
-## Встроенные сканеры (неполный список)
-
-- SecurityHeaders — проверка обязательных заголовков безопасности на корне (/).
-- CORS — анализ Access-Control-Allow-Origin и связанных заголовков.
-- WeakAuth — ответы без аутентификации или с невалидным токеном.
-- Injection — инъекции (ошибки и тайминги) с ограниченным набором payload’ов и эвристик.
-- RateLimit — отсутствие 429/RateLimit-заголовков при бурст-нагрузке.
-- BOLA/IDOR — попытки доступа к объектам других пользователей.
-- BFLA, HPP, MassAssignment, VerboseErrors, Pagination, MethodOverride и др.
-
-Каждая находка автоматически получает оценку OWASP Risk Rating; итоговая severity синхронизируется с рассчитанным риском.
+Результат пишется в поля `aiSeverity`, `aiRecommendation`, `aiModel` в JSON‑, HTML‑ и PDF‑отчётах.
 
 ---
 
-## Архитектура и ключевые директории
+## Типы проверок (сканеры)
 
-- apidefender-core/ — базовые компоненты:
-  - core/Config.java — конфигурация (внутренняя модель).
-  - core/http/HttpClient.java, core/http/Masking.java — HTTP и маскирование секретов.
-  - core/openapi/OpenApiLoader.java — загрузка и парсинг OpenAPI.
-  - core/report/ReportModel.java — модель отчета.
-  - core/risk/RiskAssessor.java — расчет рисков OWASP.
-  - core/log/JsonlLogger.java — JSONL-логгер.
-- apidefender-scanners/ — интерфейс SPI и реализации сканеров:
-  - scanners/SPI.java — контракт сканера и контекст сканирования.
-  - scanners/simple/*, scanners/owasp/* — конкретные проверки.
-- apidefender-reporting/ — генерация отчетов:
-  - core/report/ReportWriter.java — запись JSON, HTML, PDF.
-  - core/report/HtmlTemplates.java — HTML-шаблон отчета.
-- apidefender-cli/ — CLI-утилита:
-  - cli/Main.java — точка входа.
-  - cli/commands/ScanCommand.java — основная команда scan и оркестрация сканирования.
-- docker/Dockerfile — сборка образа.
-- openapi.json — пример спецификации.
-- out/ — дефолтная папка для результатов (монтируется в Docker).
+Каждый сканер реализует интерфейс `SPI` и получает общий контекст: OpenAPI, HttpClient, логгер, модель отчёта, список эндпоинтов, параметры пресета и лимиты.
 
-Краткий обзор Maven:
-- Родительский pom.xml — версии плагинов и зависимостей, список модулей.
-- Модули: apidefender-core, apidefender-scanners, apidefender-reporting, apidefender-cli.
+Основные сканеры:
+
+- **SecurityHeaders** (`SecurityHeadersScanner`)  
+  Проверяет наличие ключевых заголовков безопасности на публичном корне `/`:
+  - `X-Content-Type-Options`,
+  - `X-Frame-Options`,
+  - `Strict-Transport-Security`,
+  - и другие базовые заголовки.
+
+- **CORS** (`CorsHeadersScanner`)  
+  Анализирует настройки `Access-Control-Allow-Origin` и связанные заголовки.  
+  Отдельно учитывает `public-path` и флаг `allow-cors-wildcard-public`.
+
+- **WeakAuth** (`WeakAuthScanner`)  
+  Ищет случаи, когда:
+  - доступ к ресурсу возможен без `Authorization`,
+  - или с «явно неверным» токеном (`Bearer invalid...`) сервер всё равно отвечает 2xx.
+
+- **BOLA / IDOR** (`BolaIdorScanner`, `ChainedIdorScanner`)  
+  Пробует подмену идентификаторов в путях и параметрах (например `accountId`, `paymentId`, `externalAccountID`) в пределах одного токена, чтобы выявить доступ к чужим ресурсам.
+
+- **BFLA** (`BflaScanner`)  
+  Эвристика проверки бизнес‑логики доступа: подозрительные комбинации методов/ресурсов (например, возможность отмены/подтверждения операций без ожидаемых шагов).
+
+- **HPP** (`HppScanner`) – HTTP Parameter Pollution  
+  Проверяет реакции сервера на дублирующиеся параметры (`id=1&id=2`, и т.п.).
+
+- **Pagination** (`PaginationScanner`)  
+  Проверяет корректность пагинации: ограничения на page/size, реакции на большие значения, консистентность ответов.
+
+- **MethodOverride** (`MethodOverrideScanner`)  
+  Ищет наличие `X-HTTP-Method-Override` и схожих механизмов, которые могут позволить обойти ограничения по методам.
+
+- **RateLimit** (`RateLimitScanner`)  
+  Для небольшого набора GET‑эндпоинтов делает серию запросов (`rateBurst`, в aggressive сейчас ~15) и анализирует:
+  - присутствие 429‑ответов,
+  - наличие `X-RateLimit-*` / `Retry-After`.
+
+- **ExcessiveData** (`ExcessiveDataScanner`)  
+  Сопоставляет JSON‑ответы с OpenAPI‑схемой и ищет:
+  - поля, которых нет в описанной схеме (`additionalProperties = false`),
+  - потенциальную PII в теле ответа (email/phone/card/ключевые слова).
+
+- **PIILeak** (`PiiLeakScanner`)  
+  Делает GET‑запросы к описанным в OpenAPI путям и ищет в 2xx‑ответах:
+  - email, телефоны, номера карт (с luhn‑проверкой),
+  - слова вроде `passport`, `inn`, `снилс`, и т.п.,
+  - баланс/баллы/лимиты и др. бизнес‑критичные данные (`availableBalance`, `reward`, `points`, `баланс`, `баллы`, …),
+  - строки, похожие на имена (латиница и кириллица),
+  - «человекоподобный» текст достаточной длины.  
+  При нахождении формирует категорию `PIILeak`.
+
+- **MassAssignment** (`MassAssignmentScanner`)  
+  Пытается добавить в запросы поля, отсутствующие в схеме OpenAPI, чтобы проверить, принимаются ли лишние данные.
+
+- **VerboseErrors** (`VerboseErrorsScanner`)  
+  Посылает «ломаные» запросы и ищет в 5xx‑ответах признаки подробных ошибок:
+  - `Exception:`, `Stack trace`, стеки и т.п.
+
+- **Undocumented** (`UndocumentedScanner`, `GuidedDiscoveryScanner`)  
+  - Проверяет типовые служебные пути:
+    - `/health`, `/status`, `/metrics`, `/actuator/*`, `/admin/*`, `/internal/*`, `/swagger*`, `/v3/api-docs`, `/openapi.json`, `/apidocs`, `/docs/index.html`, `/webjars/swagger-ui/index.html`, и др.
+  - Генерирует кандидатов на основе сегментов из OpenAPI: `/segment/debug`, `/segment/internal`, `/segment/metrics`, `/segment/health`, `/segment/status`.
+  - Если эндпоинт отвечает `2xx/401/403` и не описан в OpenAPI — создаётся `Undocumented`‑уязвимость.
+
+> Отдельного Injection‑сканера сейчас нет — он отключён, так как в текущем контексте не давал практических результатов.
+
+Помимо сканеров, для каждой операции выполняется **контрактная проверка**:
+- соответствие статус‑кодов описанным в `responses`,
+- соответствие `Content-Type`,
+- валидация JSON‑ответа по схеме, включая `oneOf/anyOf/allOf`,
+- наличие обязательных заголовков ответа.
 
 ---
 
-## Переменные окружения и файлы
+## Структура проекта
 
-- JWT-токен передается через файл опцией --token-file (например, ./token.jwt).
-- При запуске в Docker примонтируйте:
-  - openapi.json → /app/specs/openapi.json (чтение).
-  - token.jwt → /secrets/token.jwt (чтение).
-  - out/ → /out (запись отчетов, логов, трасс).
-- Обязательных переменных окружения нет. 
+- `apidefender-core/` – ядро:
+  - `core/Config.java` – конфигурация сканирования (пресеты, таймауты, пути отчётов).
+  - `core/http/HttpClient.java` – обёртка над OkHttp с токеном, корреляционными заголовками и троттлингом (задержка между запросами в зависимости от пресета).
+  - `core/http/Masking.java` – маскирование секретов в логах/трейсах.
+  - `core/openapi/OpenApiLoader.java` – загрузка и парсинг OpenAPI, выбор базового URL.
+  - `core/report/ReportModel.java` – модель отчёта (meta, contract mismatches, security issues, telemetry).
+  - `core/report/ReportWriter.java` – генерация JSON, HTML, PDF.
+  - `core/report/HtmlTemplates.java` – шаблон HTML‑отчёта.
+  - `core/risk/RiskAssessor.java` – эвристический OWASP Risk Rating (likelihood, impact, score, rating).
+  - `core/log/JsonlLogger.java` – структурированный JSONL‑логгер (stdout + файл).
+
+- `apidefender-scanners/` – набор сканеров и SPI:
+  - `scanners/SPI.java` – интерфейс `SPI` и `ScanContext` (общий контекст сканирования, генерация URL с подстановкой path‑параметров).
+  - `scanners/simple/*` – простые сканеры заголовков (CORS, SecurityHeaders).
+  - `scanners/owasp/*` – доменные и OWASP‑ориентированные сканеры (WeakAuth, BOLA/IDOR, PIILeak, ExcessiveData, RateLimit, MassAssignment, VerboseErrors, BFLA, HPP, Pagination, MethodOverride, Undocumented/GuidedDiscovery и др.).
+
+- `apidefender-reporting/` – отчётность:
+  - `core/report/ReportWriter.java` – запись JSON/HTML/PDF.
+  - `core/report/HtmlTemplates.java` – HTML‑разметка отчёта, включающая сводку по severity, risk, телеметрию, slow endpoints и детальные таблицы.
+
+- `apidefender-cli/` – CLI:
+  - `cli/Main.java` – точка входа (`apidefender`).
+  - `cli/commands/ScanCommand.java` – команда `scan`, парсинг CLI‑флагов, запуск сканеров, агрегация результатов, вызов AI.
+  - `cli/ai/AiAdvisor.java` – интеграция с OpenRouter, группировка уязвимостей по чанкам, парсинг JSON‑ответа AI.
+
+- `docker/Dockerfile` – многоступенчатая сборка (Maven + JRE), оптимизирована под кэш и PDF‑рендеринг (fonts‑dejavu).
+- `openapi.json` – пример спецификации API.
+- `out/` – каталог для отчётов, логов и трейсов (монтируется в Docker).
+
+Проект построен как Maven‑multi‑module:
+- корневой `pom.xml` – общие зависимости и BOM (Jackson и др.),
+- модули: `apidefender-core`, `apidefender-scanners`, `apidefender-reporting`, `apidefender-cli`.
 
 ---
 
-## Замечания по безопасности
+## Токены и ключи
 
-- Пресет aggressive может генерировать повышенную нагрузку и выявляющие payload’ы. 
-- Включайте --mask-secrets (по умолчанию включено), чтобы скрывать токены и чувствительные данные в логах и трассах.
-- Опция --safety-skip-delete предотвращает выполнение потенциально опасных DELETE (по умолчанию включено).
+- **JWT‑токен**:
+  - кладётся в файл, путь передаётся через `--token-file` (например, `./token.jwt`),
+  - в Docker монтируется как `/secrets/token.jwt`,
+  - автоматически добавляется в каждый запрос в виде `Authorization: Bearer <token>`.
+
+- **API‑ключ для AI (OpenRouter)**:
+  - по умолчанию читается из `./api_key.txt` (или любого пути, указанного в `--ai-key-file`),
+  - в Docker обычно монтируется как `/secrets/api_key.txt`,
+  - используется только при `--ai-enabled`.
+
+> Содержимое ключей и JWT нигде не логируется в открытом виде (маскируется перед записью в отчёты и логи, если включён `--mask-secrets`).
 
 ---
-## AI в Docker
-- Для обогащения отчета рекомендациями ИИ запустите контейнер с дополнительным монтированием ключа: ./api_key.txt -> /secrets/api_key.txt.
-- Пример (fast preset, PowerShell):
-  docker run --rm `
-    -v "${PWD}/openapi.json:/app/specs/openapi.json" `
-    -v "${PWD}/token.jwt:/secrets/token.jwt" `
-    -v "${PWD}/api_key.txt:/secrets/api_key.txt" `
-    -v "${PWD}/out:/out" `
-    apidefender:local scan --preset fast --openapi /app/specs/openapi.json --token-file /secrets/token.jwt --ai-enabled --ai-key-file /secrets/api_key.txt --report-html /out/report.html --report-pdf /out/report.pdf --report-json /out/report.json --save-traces /out/traces --log-file /out/scan.log
-- Параметры: --ai-model (по умолчанию openai/gpt-4o-mini), --ai-timeout (по умолчанию 20s).
+
+## Отчёты и трассы
+
+После завершения сканирования в каталоге `out/` появляются:
+
+- `report.json` – машиночитаемый отчёт:
+  - `meta` – времена начала/окончания, preset, target, версия OpenAPI, количество эндпоинтов.
+  - `contract` – список несоответствий контракту (status, headers, schema, undocumented).
+  - `security` – массив найденных уязвимостей (`category`, `severity`, `endpoint`, `method`, `description`, `evidence`, `impact`, `recommendation`, `traceRef`, `aiSeverity`, `aiRecommendation`, `aiModel`).
+  - `telemetry` – суммарная статистика сканирования (кол‑во запросов, средняя задержка, счётчики по категориям, время работы сканеров).
+- `report.html` – удобный человекочитаемый отчёт с таблицами и цветовой подсветкой по severity/risk, разворачиваемыми деталями и встроенными трейcами.
+- `report.pdf` – PDF‑версия HTML‑отчёта.
+- `scan.log` – JSONL‑лог (`ts`, `level`, `msg`), пригодный для последующего анализа/агрегации.
+- `traces/` – сырые трейсы:
+  - файлы вида `METHOD_https_host_path_code_timestamp.json`,
+  - содержат URL, метод, заголовки запроса/ответа и тело (с маской секретов).
+
+В HTML‑отчёте для каждой уязвимости есть ссылка **Details**, где можно увидеть конкретный запрос/ответ и имя файла трейса.
+
+---
+
+## Пресеты и практические рекомендации
+
+- `fast` – быстрый «smoke test»:
+  - минимальное число запросов,
+  - небольшое число кандидатов discovery,
+  - разумные лимиты IDOR/RateLimit проверок.
+
+- `full` – основной режим:
+  - покрытие всех операций из OpenAPI,
+  - полный набор сканеров,
+  - умеренная нагрузка.
+
+- `aggressive` – максимальная глубина:
+  - больше попыток BOLA/IDOR, MassAssignment и пр.,
+  - расширенный discovery (`UndocumentedScanner` + `GuidedDiscoveryScanner`),
+  - больше тестов RateLimit/PII.
+
+Безопасность и аккуратность:
+- в aggressive по умолчанию включены:
+  - троттлинг запросов на уровне HttpClient,
+  - пониженный `concurrency`, чтобы не уткнуться в Rate Limit, а реальные ответы оставить доступными для анализа;
+  - опция `--safety-skip-delete` (DELETE‑запросы в «опасных» сценариях не исполняются).
+- опция `--mask-secrets` защищает от случайной утечки токенов и чувствительных данных в логах и отчётах.
+
+---
+
+## Ограничения и дальнейшее развитие
+
+Текущая версия ориентирована на:
+- один JWT‑токен (одна роль/один пользователь),
+- HTTP‑интерфейсы, описанные в OpenAPI 3.0/3.1,
+- OpenRouter как AI‑провайдера.
+
+Потенциальные направления развития:
+- поддержка сценариев с несколькими ролями/пользователями для BOLA/BFLA,
+- расширение генерации запросов по OpenAPI (body/query‑варианты, boundary‑cases),
+- интеграция с другими AI‑провайдерами,
+- дополнительные сканеры под конкретные домены (банковские API, FAPI/PSD2 и т.п.).
+
+Тем не менее уже сейчас API Defender даёт удобный и довольно глубокий обзор безопасности API, опираясь на контракт, реальные ответы сервера и AI‑обогащение отчёта.
