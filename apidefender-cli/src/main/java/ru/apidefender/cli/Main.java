@@ -2,10 +2,14 @@ package ru.apidefender.cli;
 
 import picocli.CommandLine;
 import ru.apidefender.cli.commands.ScanCommand;
+import ru.apidefender.cli.commands.UiCommand;
 
 public class Main {
     public static void main(String[] args) {
-        int exit = new CommandLine(new Root()).addSubcommand("scan", new ScanCommand()).execute(args);
+        int exit = new CommandLine(new Root())
+                .addSubcommand("scan", new ScanCommand())
+                .addSubcommand("ui", new UiCommand())
+                .execute(args);
         System.exit(exit);
     }
 

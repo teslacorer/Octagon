@@ -13,7 +13,15 @@ import ru.apidefender.core.report.ReportModel;
 import ru.apidefender.core.report.ReportWriter;
 import ru.apidefender.core.risk.RiskAssessor;
 import ru.apidefender.scanners.SPI;
-import ru.apidefender.scanners.owasp.*;
+import ru.apidefender.scanners.gost.GostBolaScanner;
+import ru.apidefender.scanners.gost.GostExcessiveDataScanner;
+import ru.apidefender.scanners.gost.GostHackathonScanner;
+import ru.apidefender.scanners.gost.GostInjectionScanner;
+import ru.apidefender.scanners.gost.GostIdDiscoveryScanner;
+import ru.apidefender.scanners.gost.GostWeakAuthScanner;
+import ru.apidefender.scanners.gost.GostContractScanner;
+import ru.apidefender.scanners.gost.GostTracePiiScanner;
+import ru.apidefender.scanners.gost.GostPaymentsScanner;
 import ru.apidefender.scanners.simple.CorsHeadersScanner;
 import ru.apidefender.scanners.simple.SecurityHeadersScanner;
 
@@ -189,6 +197,40 @@ public class ScanCommand implements Callable<Integer> {
 
         ExecutorService pool = Executors.newFixedThreadPool(threads);
         List<Callable<Void>> tasks = new ArrayList<>();
+        Map<String,String> pathBaseUrls = new HashMap<>();
+        // build per-path base URL map from original partial specs (1.json..10.json)
+        try {
+            Path specFile = openapi.toAbsolutePath();
+            Path dir = specFile.getParent();
+            if (dir != null && Files.isDirectory(dir)) {
+                try (java.util.stream.Stream<Path> stream = Files.list(dir)) {
+                    stream.filter(p -> !p.equals(specFile) && p.getFileName().toString().endsWith(".json"))
+                            .forEach(p -> {
+                                try {
+                                    String txt = Files.readString(p);
+                                    ObjectMapper mapper = new ObjectMapper();
+                                    JsonNode root = mapper.readTree(txt);
+                                    JsonNode servers = root.path("servers");
+                                    String srv = null;
+                                    if (servers.isArray() && servers.size() > 0) {
+                                        srv = servers.get(0).path("url").asText(null);
+                                    }
+                                    if (srv == null || srv.isBlank()) return;
+                                    final String srvFinal = srv;
+                                    JsonNode pathsNode = root.path("paths");
+                                    if (!pathsNode.isObject()) return;
+                                    pathsNode.fieldNames().forEachRemaining(path -> {
+                                        if (path != null && !path.isBlank()) {
+                                            pathBaseUrls.put(path, srvFinal);
+                                        }
+                                    });
+                                } catch (Exception ignored) {
+                                }
+                            });
+                }
+            }
+        } catch (Exception ignored) {
+        }
 
         List<String> endpoints = new ArrayList<>();
         if (spec.root.has("paths")) {
@@ -211,7 +253,11 @@ public class ScanCommand implements Callable<Integer> {
         for (Op op : ops) {
             final String p = op.path; final String m = op.method; final String methodUpper = m.toUpperCase();
             tasks.add(() -> {
-                String url = (targetBase.endsWith("/")? targetBase.substring(0, targetBase.length()-1): targetBase) + (p.startsWith("/")? p: "/"+p);
+                String baseForPath = baseUrl != null && !baseUrl.isBlank()
+                        ? baseUrl
+                        : pathBaseUrls.getOrDefault(p, targetBase);
+                String baseNorm = baseForPath.endsWith("/") ? baseForPath.substring(0, baseForPath.length()-1) : baseForPath;
+                String url = baseNorm + (p.startsWith("/")? p: "/"+p);
                 long t0 = System.nanoTime();
                 try (Response r = http.request(methodUpper, url, null, null)) {
                     long dt = (System.nanoTime()-t0)/1_000_000L;
@@ -349,17 +395,22 @@ public class ScanCommand implements Callable<Integer> {
                 for (String sfx : suffixes) candidates.add("/"+rseg+sfx);
             }
             // лимит по профилю
-            int maxProbe = switch (pr) { case FAST -> 30; case AGGRESSIVE -> 200; default -> 80; };
+            int maxProbe = switch (pr) { case FAST -> 10; case AGGRESSIVE -> 80; default -> 40; };
             int[] count = {0};
             for (String p : candidates) {
                 if (count[0]++ >= maxProbe) break;
                 tasks.add(() -> {
-                    String url = (targetBase.endsWith("/")? targetBase.substring(0, targetBase.length()-1): targetBase) + p;
+                    String baseForPath = baseUrl != null && !baseUrl.isBlank()
+                            ? baseUrl
+                            : pathBaseUrls.getOrDefault(p, targetBase);
+                    String baseNorm = baseForPath.endsWith("/") ? baseForPath.substring(0, baseForPath.length()-1) : baseForPath;
+                    String url = baseNorm + p;
                     try (Response r = http.request("GET", url, null, null)) {
-                        if (r.code() != 404 && !known.contains(p)) {
+                        int code = r.code();
+                        if (code != 404 && code != 429 && !known.contains(p)) {
                             ReportModel.Undocumented u = new ReportModel.Undocumented();
-                            u.path = p; u.method = "GET"; u.status = r.code();
-                            u.evidence = "GET "+p+" => "+r.code();
+                            u.path = p; u.method = "GET"; u.status = code;
+                            u.evidence = "GET "+p+" => "+code;
                             u.traceRef = saveFullTrace(url, "GET", null, r);
                             synchronized (report.contract.undocumented){ report.contract.undocumented.add(u);} 
                         }
@@ -367,12 +418,17 @@ public class ScanCommand implements Callable<Integer> {
                     return null;
                 });
                 tasks.add(() -> {
-                    String url = (targetBase.endsWith("/")? targetBase.substring(0, targetBase.length()-1): targetBase) + p;
+                    String baseForPath = baseUrl != null && !baseUrl.isBlank()
+                            ? baseUrl
+                            : pathBaseUrls.getOrDefault(p, targetBase);
+                    String baseNorm = baseForPath.endsWith("/") ? baseForPath.substring(0, baseForPath.length()-1) : baseForPath;
+                    String url = baseNorm + p;
                     try (Response r = http.request("OPTIONS", url, null, null)) {
-                        if (r.code() >= 200 && r.code() < 500 && !known.contains(p)) {
+                        int code = r.code();
+                        if (code >= 200 && code < 400 && code != 429 && !known.contains(p)) {
                             ReportModel.Undocumented u = new ReportModel.Undocumented();
-                            u.path = p; u.method = "OPTIONS"; u.status = r.code();
-                            u.evidence = "OPTIONS "+p+" => "+r.code();
+                            u.path = p; u.method = "OPTIONS"; u.status = code;
+                            u.evidence = "OPTIONS "+p+" => "+code;
                             u.traceRef = saveFullTrace(url, "OPTIONS", null, r);
                             synchronized (report.contract.undocumented){ report.contract.undocumented.add(u);} 
                         }
@@ -382,25 +438,17 @@ public class ScanCommand implements Callable<Integer> {
             }
         }
 
+        // build per-path base URL map from original partial specs (1.json..10.json)
         List<SPI> scanners = List.of(
-                new CorsHeadersScanner(),
-                new SecurityHeadersScanner(),
-                new WeakAuthScanner(),
-                new BolaIdorScanner(),
-                // InjectionScanner полностью отключён по требованию: не даёт практических результатов
-                new ExcessiveDataScanner(),
-                new PiiLeakScanner(),
-                new ChainedIdorScanner(),
-                new RateLimitScanner(),
-                new MassAssignmentScanner(),
-                new VerboseErrorsScanner(),
-                new BflaScanner(),
-                new HppScanner(),
-                new PaginationScanner(),
-                new MethodOverrideScanner(),
-                new UndocumentedScanner(),
-                new GuidedDiscoveryScanner(),
-                new BankSurfaceScanner()
+                new GostIdDiscoveryScanner(),
+                new GostHackathonScanner(),
+                new GostWeakAuthScanner(),
+                new GostBolaScanner(),
+                new GostPaymentsScanner(),
+                new GostInjectionScanner(),
+                new GostExcessiveDataScanner(),
+                new GostTracePiiScanner(),
+                new GostContractScanner()
         );
         int idorMax = switch (pr) { case FAST -> 2; case AGGRESSIVE -> 12; default -> 6; };
         int injOps  = switch (pr) { case FAST -> 6; case AGGRESSIVE -> 30; default -> 15; };
@@ -413,9 +461,10 @@ public class ScanCommand implements Callable<Integer> {
         if (depth == null || depth.isBlank()) {
             depth = switch (pr) { case FAST -> "low"; case AGGRESSIVE -> "high"; default -> "med"; };
         }
-        SPI.ScanContext sctx = new SPI.ScanContext(targetBase, http, log, report, debug, spec.root, endpoints, pr.name().toLowerCase(), idorMax, injOps, burst,
+        SPI.ScanContext sctx = new SPI.ScanContext(baseUrl, targetBase, pathBaseUrls, http, log, report, debug, spec.root, endpoints, pr.name().toLowerCase(), idorMax, injOps, burst,
                 (url, method, reqBody, resp) -> saveFullTrace(url, method, reqBody, resp), publicPaths, allowCorsWildcardPublic,
                 depth, maxExploitOps, safetySkipDelete);
+        // Временное отключение всех SPI‑сканеров: цикл не выполняется.
         for (SPI sc : scanners) {
             tasks.add(() -> {
                 long t0 = System.nanoTime();
@@ -612,3 +661,6 @@ public class ScanCommand implements Callable<Integer> {
         }
     }
 }
+
+
+

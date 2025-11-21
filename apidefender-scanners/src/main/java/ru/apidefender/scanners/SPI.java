@@ -13,7 +13,12 @@ public interface SPI {
     CompletableFuture<Void> run(ScanContext ctx);
 
     class ScanContext {
-        public final String baseUrl;
+        // CLI override base URL (if provided), otherwise null
+        public final String overrideBaseUrl;
+        // Default base URL from OpenAPI (first server) or fallback
+        public final String defaultBaseUrl;
+        // Optional mapping pathTemplate -> baseUrl (built from original specs)
+        public final java.util.Map<String, String> pathBaseUrls;
         public final HttpClient http;
         public final JsonlLogger log;
         public final ReportModel report;
@@ -32,13 +37,19 @@ public interface SPI {
 
         public final List<String> publicPaths;
         public final boolean allowCorsWildcardPublic;
+        public final java.util.Map<String, java.util.List<String>> discoveredIds;
 
-        public ScanContext(String baseUrl, HttpClient http, JsonlLogger log, ReportModel report,
+        public ScanContext(String overrideBaseUrl,
+                           String defaultBaseUrl,
+                           java.util.Map<String, String> pathBaseUrls,
+                           HttpClient http, JsonlLogger log, ReportModel report,
                            boolean debug, JsonNode openapi, List<String> endpoints, String preset,
                            int idorMax, int injectionOps, int rateBurst, TraceSaver traceSaver,
                            List<String> publicPaths, boolean allowCorsWildcardPublic,
                            String exploitDepth, int maxExploitOps, boolean safetySkipDelete) {
-            this.baseUrl = baseUrl;
+            this.overrideBaseUrl = overrideBaseUrl;
+            this.defaultBaseUrl = defaultBaseUrl;
+            this.pathBaseUrls = pathBaseUrls != null ? pathBaseUrls : java.util.Collections.emptyMap();
             this.http = http;
             this.log = log;
             this.report = report;
@@ -55,12 +66,70 @@ public interface SPI {
             this.exploitDepth = exploitDepth;
             this.maxExploitOps = maxExploitOps;
             this.safetySkipDelete = safetySkipDelete;
+            this.discoveredIds = java.util.Collections.synchronizedMap(new java.util.HashMap<>());
+        }
+
+        /**
+         * Обёртка над HttpClient, учитывающая все запросы в общей телеметрии.
+         */
+        public okhttp3.Response trackedRequest(String method, String url,
+                                               java.util.Map<String, String> headers,
+                                               okhttp3.RequestBody body) throws java.io.IOException {
+            long t0 = System.nanoTime();
+            okhttp3.Response resp = http.request(method, url, headers, body);
+            long dt = (System.nanoTime() - t0) / 1_000_000L;
+            synchronized (report.telemetry) {
+                report.telemetry.requestsTotal++;
+                report.telemetry.avgLatencyMs += dt;
+            }
+            return resp;
+        }
+
+        public void addDiscoveredId(String key, String value) {
+            if (key == null || value == null || value.isBlank()) return;
+            String k = key.toLowerCase(java.util.Locale.ROOT);
+            discoveredIds.computeIfAbsent(k, ignore -> new java.util.ArrayList<>());
+            java.util.List<String> list = discoveredIds.get(k);
+            if (!list.contains(value)) list.add(value);
         }
 
         public String url(String path) {
-            String b = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
+            String base = resolveBaseUrl(path);
+            String b = base.endsWith("/") ? base.substring(0, base.length() - 1) : base;
             String resolved = resolvePathParams(path);
             return b + (resolved.startsWith("/") ? resolved : "/" + resolved);
+        }
+
+        private String resolveBaseUrl(String path) {
+            // CLI override has highest priority
+            if (overrideBaseUrl != null && !overrideBaseUrl.isBlank()) {
+                return overrideBaseUrl;
+            }
+            if (pathBaseUrls != null && !pathBaseUrls.isEmpty()) {
+                String p = path == null ? "" : (path.startsWith("/") ? path : "/" + path);
+                String direct = pathBaseUrls.get(p);
+                if (direct != null && !direct.isBlank()) return direct;
+                String best = null;
+                int bestLen = -1;
+                for (java.util.Map.Entry<String, String> e : pathBaseUrls.entrySet()) {
+                    String key = e.getKey();
+                    if (key == null || key.isBlank()) continue;
+                    String base = e.getValue();
+                    if (base == null || base.isBlank()) continue;
+                    String prefix = key;
+                    int idx = key.indexOf('{');
+                    if (idx >= 0) prefix = key.substring(0, idx);
+                    if (prefix.isEmpty()) continue;
+                    if (p.startsWith(prefix) && prefix.length() > bestLen) {
+                        bestLen = prefix.length();
+                        best = base;
+                    }
+                }
+                if (best != null) return best;
+            }
+            return (defaultBaseUrl != null && !defaultBaseUrl.isBlank())
+                    ? defaultBaseUrl
+                    : "http://localhost:8080";
         }
 
         private String resolvePathParams(String path) {
@@ -101,4 +170,3 @@ public interface SPI {
         }
     }
 }
-

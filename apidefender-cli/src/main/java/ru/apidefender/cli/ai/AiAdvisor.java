@@ -40,10 +40,28 @@ public class AiAdvisor {
     public void enrich(List<ReportModel.SecurityIssue> issues) {
         if (issues == null || issues.isEmpty()) return;
         try {
+            // Убираем дубли по id, чтобы не слать одно и то же в AI по много раз
+            Map<String, ReportModel.SecurityIssue> byId = new java.util.LinkedHashMap<>();
+            for (ReportModel.SecurityIssue si : issues) {
+                String id = si != null ? si.id : null;
+                if (id == null || id.isEmpty()) continue;
+                byId.putIfAbsent(id, si);
+            }
+            List<ReportModel.SecurityIssue> unique = new java.util.ArrayList<>(byId.values());
+            if (unique.isEmpty()) return;
+
+            // Жёсткий лимит на количество уязвимостей, которые отдаём в AI за один запуск,
+            // чтобы исключить "бесконечные" однотипные запросы
+            int maxIssues = 56;
+            if (unique.size() > maxIssues) {
+                log.info("AI enrichment limited to first " + maxIssues + " issues out of " + unique.size());
+                unique = unique.subList(0, maxIssues);
+            }
+
             Map<String, AiResult> results = new HashMap<>();
             int chunkSize = 10;
-            for (int i = 0; i < issues.size(); i += chunkSize) {
-                List<ReportModel.SecurityIssue> sub = issues.subList(i, Math.min(i + chunkSize, issues.size()));
+            for (int i = 0; i < unique.size(); i += chunkSize) {
+                List<ReportModel.SecurityIssue> sub = unique.subList(i, Math.min(i + chunkSize, unique.size()));
                 try {
                     Map<String, AiResult> r = askBatch(sub);
                     results.putAll(r);

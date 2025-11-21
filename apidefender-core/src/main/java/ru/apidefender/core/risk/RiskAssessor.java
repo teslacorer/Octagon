@@ -16,6 +16,7 @@ public class RiskAssessor {
         String desc = si.description != null? si.description.toLowerCase() : "";
         String evid = si.evidence != null? si.evidence.toLowerCase() : "";
         String endpoint = si.endpoint != null? si.endpoint.toLowerCase() : "";
+        String method = si.method != null ? si.method.toUpperCase() : "";
 
         double l = 3.0, i = 3.0;
 
@@ -48,6 +49,12 @@ public class RiskAssessor {
                 l = 4.0; i = 4.0;
             }
             default -> { l = 4.0; i = 4.0; }
+        }
+
+        // DELETE-операции с успешным подтверждением считаем более критичными.
+        if ("DELETE".equals(method)) {
+            i = Math.max(i, 8.0);
+            l = Math.max(l, 7.0);
         }
 
         // Endpoint sensitivity boosters
