@@ -12,19 +12,25 @@ public class HttpClient {
     private final OkHttpClient client;
     private final String token;
     private final boolean maskSecrets;
+    private final long throttleMillis;
 
     public HttpClient(Duration timeout, String token, boolean maskSecrets) {
+        this(timeout, token, maskSecrets, 0L);
+    }
+
+    public HttpClient(Duration timeout, String token, boolean maskSecrets, long throttleMillis) {
         this.client = new OkHttpClient.Builder()
                 .callTimeout(timeout)
                 .build();
         this.token = token;
         this.maskSecrets = maskSecrets;
+        this.throttleMillis = throttleMillis;
     }
 
     public Response request(String method, String url, Map<String, String> headers, RequestBody body) throws IOException {
         Request.Builder b = new Request.Builder().url(url);
         if (token != null && !token.isBlank()) b.header("Authorization", "Bearer " + token);
-        // default correlation headers if не переданы
+        // default correlation headers if missing
         boolean hasCorr = hasHeader(headers, "Correlation-ID");
         boolean hasCaller = hasHeader(headers, "X-Caller-Id");
         if (!hasCorr) b.header("Correlation-ID", UUID.randomUUID().toString());
@@ -37,8 +43,9 @@ public class HttpClient {
             case "PATCH" -> b.patch(body != null ? body : RequestBody.create(new byte[0]));
             case "DELETE" -> b.delete(body);
             case "HEAD" -> b.head();
-            default -> throw new IllegalArgumentException("Неизвестный метод: " + method);
+            default -> throw new IllegalArgumentException("Unsupported method: " + method);
         }
+        applyThrottle();
         return client.newCall(b.build()).execute();
     }
 
@@ -60,9 +67,20 @@ public class HttpClient {
             case "PATCH" -> b.patch(body != null ? body : RequestBody.create(new byte[0]));
             case "DELETE" -> b.delete(body);
             case "HEAD" -> b.head();
-            default -> throw new IllegalArgumentException("Неподдерживаемый метод: " + method);
+            default -> throw new IllegalArgumentException("Unsupported method: " + method);
         }
+        applyThrottle();
         return client.newCall(b.build()).execute();
+    }
+
+    private void applyThrottle() {
+        if (throttleMillis > 0) {
+            try {
+                Thread.sleep(throttleMillis);
+            } catch (InterruptedException ignored) {
+                Thread.currentThread().interrupt();
+            }
+        }
     }
 
     private boolean hasHeader(Map<String,String> headers, String name){
@@ -100,3 +118,4 @@ public class HttpClient {
         return sb.toString();
     }
 }
+

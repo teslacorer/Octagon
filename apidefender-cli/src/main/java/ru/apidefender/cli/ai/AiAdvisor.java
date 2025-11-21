@@ -113,11 +113,12 @@ public class AiAdvisor {
                 .build();
 
         try (Response resp = client.newCall(req).execute()) {
+            String body = resp.body() != null ? resp.body().string() : "";
             if (!resp.isSuccessful()) {
-                log.error("AI request failed: HTTP " + resp.code(), null);
+                String snippet = body != null && body.length() > 500 ? body.substring(0, 500) + "..." : body;
+                log.error("AI request failed: HTTP " + resp.code() + ", body=" + snippet, null);
                 return Map.of();
             }
-            String body = resp.body() != null ? resp.body().string() : "";
             JsonNode node = mapper.readTree(body);
             JsonNode msg = node.path("choices").path(0).path("message").path("content");
             if (msg.isMissingNode()) {

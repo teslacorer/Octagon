@@ -38,9 +38,17 @@ public interface SPI {
                            int idorMax, int injectionOps, int rateBurst, TraceSaver traceSaver,
                            List<String> publicPaths, boolean allowCorsWildcardPublic,
                            String exploitDepth, int maxExploitOps, boolean safetySkipDelete) {
-            this.baseUrl = baseUrl; this.http = http; this.log = log; this.report = report; this.debug = debug;
-            this.openapi = openapi; this.endpoints = endpoints; this.preset = preset;
-            this.idorMax = idorMax; this.injectionOps = injectionOps; this.rateBurst = rateBurst;
+            this.baseUrl = baseUrl;
+            this.http = http;
+            this.log = log;
+            this.report = report;
+            this.debug = debug;
+            this.openapi = openapi;
+            this.endpoints = endpoints;
+            this.preset = preset;
+            this.idorMax = idorMax;
+            this.injectionOps = injectionOps;
+            this.rateBurst = rateBurst;
             this.traceSaver = traceSaver;
             this.publicPaths = publicPaths;
             this.allowCorsWildcardPublic = allowCorsWildcardPublic;
@@ -48,15 +56,34 @@ public interface SPI {
             this.maxExploitOps = maxExploitOps;
             this.safetySkipDelete = safetySkipDelete;
         }
-        public String url(String path){
-            String b = baseUrl.endsWith("/")? baseUrl.substring(0, baseUrl.length()-1): baseUrl;
+
+        public String url(String path) {
+            String b = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
             String resolved = resolvePathParams(path);
-            return b + (resolved.startsWith("/")? resolved: "/"+resolved);
+            return b + (resolved.startsWith("/") ? resolved : "/" + resolved);
         }
 
         private String resolvePathParams(String path) {
-            // не подставляем значения в плейсхолдеры, используем как есть
-            return path == null ? "" : path;
+            if (path == null || path.isEmpty()) return "";
+            StringBuilder sb = new StringBuilder();
+            int i = 0;
+            while (i < path.length()) {
+                int start = path.indexOf('{', i);
+                if (start < 0) {
+                    sb.append(path.substring(i));
+                    break;
+                }
+                int end = path.indexOf('}', start);
+                if (end < 0) {
+                    sb.append(path.substring(i));
+                    break;
+                }
+                sb.append(path, i, start);
+                String name = path.substring(start + 1, end).toLowerCase(java.util.Locale.ROOT);
+                sb.append(sampleValue(name));
+                i = end + 1;
+            }
+            return sb.toString();
         }
 
         private String sampleValue(String name) {
@@ -74,3 +101,4 @@ public interface SPI {
         }
     }
 }
+

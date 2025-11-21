@@ -47,11 +47,11 @@ public class GuidedDiscoveryScanner implements SPI {
                 String url = ctx.url(p);
                 try (Response r = ctx.http.request("GET", url, null, null)) {
                     int code = r.code();
-                    if (code >= 200 && code < 300) {
+                    if ((code >= 200 && code < 300) || code == 401 || code == 403 || code == 429) {
                         ReportModel.SecurityIssue si = new ReportModel.SecurityIssue();
                         si.id = UUID.randomUUID().toString();
                         si.category = getCategory();
-                        si.severity = "Medium";
+                        si.severity = (code >= 200 && code < 300) ? "Medium" : "Low";
                         si.endpoint = p;
                         si.method = "GET";
                         si.description = "Найдён недокументированный эндпоинт (guided)";

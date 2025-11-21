@@ -83,7 +83,7 @@ public class ScanCommand implements Callable<Integer> {
     boolean aiEnabled;
     @CommandLine.Option(names = "--ai-key-file", description = "Path to OpenRouter API key", defaultValue = "./api_key.txt")
     Path aiKeyFile;
-    @CommandLine.Option(names = "--ai-model", description = "OpenRouter model id (e.g. openai/gpt-4o-mini)", defaultValue = "openai/gpt-4o-mini")
+    @CommandLine.Option(names = "--ai-model", description = "OpenRouter model id (e.g. x-ai/grok-4.1-fast)", defaultValue = "x-ai/grok-4.1-fast")
     String aiModel;
     @CommandLine.Option(names = "--ai-timeout", description = "Timeout for AI calls (e.g. 20s)", defaultValue = "20s")
     String aiTimeout;
@@ -96,6 +96,38 @@ public class ScanCommand implements Callable<Integer> {
         if (s.endsWith("m")) return Duration.ofMinutes(Long.parseLong(s.substring(0, s.length()-1)));
         if (s.endsWith("h")) return Duration.ofHours(Long.parseLong(s.substring(0, s.length()-1)));
         return Duration.ofMinutes(5);
+    }
+
+    /**
+     * Remove artefacts from previous runs in the common output directory (e.g. /out)
+     * before starting a new scan. This clears reports, traces and log files.
+     */
+    private void clearPreviousOutputs() {
+        try {
+            Path root = null;
+            if (reportHtml != null && reportHtml.getParent() != null) {
+                root = reportHtml.getParent();
+            } else if (reportJson != null && reportJson.getParent() != null) {
+                root = reportJson.getParent();
+            } else if (reportPdf != null && reportPdf.getParent() != null) {
+                root = reportPdf.getParent();
+            } else if (tracesDir != null && tracesDir.getParent() != null) {
+                root = tracesDir.getParent();
+            } else if (logFile != null && logFile.getParent() != null) {
+                root = logFile.getParent();
+            }
+            if (root == null) return;
+            if (!java.nio.file.Files.exists(root) || !java.nio.file.Files.isDirectory(root)) return;
+
+            final Path rootDir = root;
+            try (java.util.stream.Stream<Path> walk = java.nio.file.Files.walk(rootDir)) {
+                walk.sorted(java.util.Comparator.reverseOrder())
+                        .filter(p -> !p.equals(rootDir))
+                        .forEach(p -> {
+                            try { java.nio.file.Files.deleteIfExists(p); } catch (Exception ignored) {}
+                        });
+            }
+        } catch (Exception ignored) { }
     }
 
     @Override
@@ -112,6 +144,9 @@ public class ScanCommand implements Callable<Integer> {
         try (java.io.BufferedReader br = java.nio.file.Files.newBufferedReader(openapi)) { openapiLines = br.lines().count(); } catch (Exception ignored) {}
         try (java.io.BufferedReader br = java.nio.file.Files.newBufferedReader(tokenFile)) { tokenLines = br.lines().count(); } catch (Exception ignored) {}
 
+        // Clean previous outputs (reports, traces, logs) in a shared output directory (e.g. /out)
+        clearPreviousOutputs();
+
         OpenApiLoader loader = new OpenApiLoader();
         OpenApiLoader.LoadedSpec spec = loader.load(openapi);
         String targetBase = baseUrl != null? baseUrl: Optional.ofNullable(spec.firstServerUrl).orElse("http://localhost:8080");
@@ -123,13 +158,28 @@ public class ScanCommand implements Callable<Integer> {
             default -> Config.Preset.FULL;
         };
         Duration dur = parseDuration(timeout);
-        int threads = concurrency != null? concurrency: Math.max(2, Runtime.getRuntime().availableProcessors());
+        int threads;
+        if (concurrency != null) {
+            threads = concurrency;
+        } else {
+            threads = switch (pr) {
+                case FAST -> 4;
+                case AGGRESSIVE -> 2;
+                default -> 3;
+            };
+        }
 
         String token = Files.readString(tokenFile).trim();
         log.info("Input files verified: openapiLines=" + openapiLines + ", tokenLines=" + tokenLines);
         Files.createDirectories(tracesDir);
 
-        HttpClient http = new HttpClient(dur, token, maskSecrets);
+        long throttleMs = switch (pr) {
+            case FAST -> 0L;
+            case AGGRESSIVE -> 150L;
+            default -> 75L;
+        };
+
+        HttpClient http = new HttpClient(dur, token, maskSecrets, throttleMs);
         ReportModel report = new ReportModel();
         report.meta.startedAt = started.toString();
         report.meta.preset = pr.name().toLowerCase();
@@ -337,7 +387,7 @@ public class ScanCommand implements Callable<Integer> {
                 new SecurityHeadersScanner(),
                 new WeakAuthScanner(),
                 new BolaIdorScanner(),
-                new InjectionScanner(),
+                // InjectionScanner полностью отключён по требованию: не даёт практических результатов
                 new ExcessiveDataScanner(),
                 new PiiLeakScanner(),
                 new ChainedIdorScanner(),
@@ -353,7 +403,7 @@ public class ScanCommand implements Callable<Integer> {
         );
         int idorMax = switch (pr) { case FAST -> 2; case AGGRESSIVE -> 12; default -> 6; };
         int injOps  = switch (pr) { case FAST -> 6; case AGGRESSIVE -> 30; default -> 15; };
-        int burst   = switch (pr) { case FAST -> 5; case AGGRESSIVE -> 40; default -> 15; };
+        int burst   = switch (pr) { case FAST -> 3; case AGGRESSIVE -> 15; default -> 8; };
         report.telemetry.presetParams.put("idorMax", idorMax);
         report.telemetry.presetParams.put("injectionOps", injOps);
         report.telemetry.presetParams.put("rateBurst", burst);

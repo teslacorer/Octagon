@@ -6,20 +6,29 @@ import ru.apidefender.scanners.SPI;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Best-effort поиск PII в ответах (email/phone/card/паспортные ключевые слова).
- * Фокус на GET эндпоинтах, чтобы не вносить побочные эффекты.
+ * Best-effort поиск утечек PII и чувствительных данных в ответах:
+ * email/phone/card/идентификаторы/балансы/баллы и т.п.
+ * Работает по GET‑эндпоинтам, опираясь на эвристики.
  */
 public class PiiLeakScanner implements SPI {
-    @Override public String getCategory() { return "PIILeak"; }
+    @Override
+    public String getCategory() {
+        return "PIILeak";
+    }
 
     @Override
     public CompletableFuture<Void> run(ScanContext ctx) {
         return CompletableFuture.runAsync(() -> {
-            int max = switch (ctx.preset) { case "fast" -> 10; case "aggressive" -> 100; default -> 40; };
+            int max = switch (ctx.preset) {
+                case "fast" -> 10;
+                case "aggressive" -> 100;
+                default -> 40;
+            };
             int tested = 0;
             for (String p : ctx.endpoints) {
                 if (tested >= max) break;
@@ -29,23 +38,27 @@ public class PiiLeakScanner implements SPI {
                 try (Response r = ctx.http.request("GET", url, null, null)) {
                     String body = r.peekBody(1_000_000).string();
                     int status = r.code();
-                    if (status < 200 || status >= 300) continue; // только успешные
+                    if (status < 200 || status >= 300) continue; // анализируем только успешные ответы
                     List<String> hits = detectPii(body);
                     if (!hits.isEmpty()) {
+                        ctx.log.info("PIILeak: potential sensitive data at " + p + " hits=" + hits);
                         ReportModel.SecurityIssue si = new ReportModel.SecurityIssue();
                         si.id = UUID.randomUUID().toString();
                         si.category = getCategory();
                         si.severity = "High";
                         si.endpoint = p;
                         si.method = "GET";
-                        si.description = "Найдены потенциальные PII-данные в ответе";
+                        si.description = "Обнаружена потенциальная утечка PII/чувствительных данных в ответе.";
                         si.evidence = String.join(", ", hits);
-                        si.impact = "Утечка персональных данных";
-                        si.recommendation = "Фильтровать/маскировать чувствительные поля; возвращать только необходимые данные";
+                        si.impact = "Возможна компрометация персональных/финансовых данных пользователя.";
+                        si.recommendation = "Минимизировать объём возвращаемых данных, маскировать чувствительные поля и пересмотреть контракт API.";
                         si.traceRef = ctx.traceSaver.save(url, "GET", null, r);
-                        synchronized (ctx.report.security) { ctx.report.security.add(si); }
+                        synchronized (ctx.report.security) {
+                            ctx.report.security.add(si);
+                        }
                     }
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
             }
         });
     }
@@ -54,20 +67,56 @@ public class PiiLeakScanner implements SPI {
         List<String> hits = new ArrayList<>();
         if (body == null || body.isEmpty()) return hits;
         try {
+            String normalized = body.trim();
+            String lowered = normalized.toLowerCase(Locale.ROOT);
+
+            // Игнорируем тривиальные технические ответы вида "Not Found"
+            if ("not found".equals(lowered) || "\"not found\"".equals(lowered)) {
+                return hits;
+            }
+
+            // Базовые типы PII
             if (body.matches("(?is).*\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b.*")) hits.add("email");
             if (body.matches("(?s).*(?:\\+?[0-9][0-9\\-()\\s]{7,}[0-9]).*")) hits.add("phone");
             if (containsCardNumber(body)) hits.add("card");
-            String lowered = body.toLowerCase();
-            if (lowered.matches("(?s).*(passport|ssn|snils|inn|ogrn|driving\\s*licence|driver's|passport|паспорт|снилс|инн|огрн|телефон|почта|емейл|email).*$")) hits.add("pii-keyword");
+
+            // Ключевые слова, связанные с документами/идентификаторами
+            if (lowered.matches("(?s).*(passport|ssn|snils|inn|ogrn|driving\\s*licence|driver's|passport|паспорт|снилс|инн|огрн|email).*$")) {
+                hits.add("pii-keyword");
+            }
+
+            // Доменные/финансовые данные: балансы, лимиты, вознаграждения и т.п.
+            if (lowered.matches("(?s).*(balance|availablebalance|reward|rewards|rewardtype|points|bonus|bonuses|limit|credit|loan|accountid|externalaccountid|баланс|счет|счёт|баллы|лимит|кредит|депозит|займ|заём).*")) {
+                hits.add("business-data");
+            }
+
+            // Похожие на имена строки
             if (body.matches("(?is).*\\b([A-Z][a-z]+\\s+[A-Z][a-z]+\\s+[A-Z][a-z]+)\\b.*")) hits.add("full-name-like");
             if (body.matches("(?ius).*\\b([А-ЯЁ][а-яё]+\\s+[А-ЯЁ][а-яё]+(?:\\s+[А-ЯЁ][а-яё]+)?)\\b.*")) hits.add("cyrillic-name-like");
-        } catch (Exception ignored) {}
+
+            // Общая эвристика "человекоподобного" текста:
+            // достаточно длинный текст, состоящий из букв и пробелов, не похожий на короткую ошибку.
+            if (!normalized.isEmpty()) {
+                int letters = 0;
+                int spaces = 0;
+                for (char c : normalized.toCharArray()) {
+                    if (Character.isLetter(c)) letters++;
+                    else if (c == ' ') spaces++;
+                }
+                if (letters >= 30 && spaces >= 3) {
+                    hits.add("human-like-text");
+                }
+            }
+        } catch (Exception ignored) {
+        }
         return hits;
     }
 
     private boolean containsCardNumber(String body) {
-        // ищем 13-19 цифр подряд и валидируем luhn
-        java.util.regex.Matcher m = java.util.regex.Pattern.compile("(\\d{13,19})").matcher(body.replaceAll("[^0-9]", ""));
+        // Поиск 13-19 цифр подряд с валидацией по Luhn
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("(\\d{13,19})")
+                .matcher(body.replaceAll("[^0-9]", ""));
         while (m.find()) {
             if (luhnCheck(m.group(1))) return true;
         }
@@ -89,3 +138,4 @@ public class PiiLeakScanner implements SPI {
         return sum % 10 == 0;
     }
 }
+
