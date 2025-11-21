@@ -399,7 +399,8 @@ public class ScanCommand implements Callable<Integer> {
                 new PaginationScanner(),
                 new MethodOverrideScanner(),
                 new UndocumentedScanner(),
-                new GuidedDiscoveryScanner()
+                new GuidedDiscoveryScanner(),
+                new BankSurfaceScanner()
         );
         int idorMax = switch (pr) { case FAST -> 2; case AGGRESSIVE -> 12; default -> 6; };
         int injOps  = switch (pr) { case FAST -> 6; case AGGRESSIVE -> 30; default -> 15; };
