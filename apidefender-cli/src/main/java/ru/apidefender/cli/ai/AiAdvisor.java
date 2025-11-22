@@ -38,21 +38,24 @@ public class AiAdvisor {
     }
 
     public void enrich(List<ReportModel.SecurityIssue> issues) {
-        if (issues == null || issues.isEmpty()) return;
+        if (issues == null || issues.isEmpty())
+            return;
         try {
             // Убираем дубли по id, чтобы не слать одно и то же в AI по много раз
             Map<String, ReportModel.SecurityIssue> byId = new java.util.LinkedHashMap<>();
             for (ReportModel.SecurityIssue si : issues) {
                 String id = si != null ? si.id : null;
-                if (id == null || id.isEmpty()) continue;
+                if (id == null || id.isEmpty())
+                    continue;
                 byId.putIfAbsent(id, si);
             }
             List<ReportModel.SecurityIssue> unique = new java.util.ArrayList<>(byId.values());
-            if (unique.isEmpty()) return;
+            if (unique.isEmpty())
+                return;
 
             // Жёсткий лимит на количество уязвимостей, которые отдаём в AI за один запуск,
             // чтобы исключить "бесконечные" однотипные запросы
-            int maxIssues = 56;
+            int maxIssues = 80;
             if (unique.size() > maxIssues) {
                 log.info("AI enrichment limited to first " + maxIssues + " issues out of " + unique.size());
                 unique = unique.subList(0, maxIssues);
@@ -66,7 +69,8 @@ public class AiAdvisor {
                     Map<String, AiResult> r = askBatch(sub);
                     results.putAll(r);
                 } catch (Exception e) {
-                    log.error("AI chunk failed for items "+i+".."+(Math.min(i+chunkSize, issues.size())-1), e);
+                    log.error("AI chunk failed for items " + i + ".." + (Math.min(i + chunkSize, issues.size()) - 1),
+                            e);
                 }
             }
             int processed = 0;
@@ -79,7 +83,7 @@ public class AiAdvisor {
                     processed++;
                 }
             }
-            log.info("AI enrichment completed: "+processed+" of "+issues.size()+" issues updated");
+            log.info("AI enrichment completed: " + processed + " of " + issues.size() + " issues updated");
         } catch (Exception e) {
             log.error("AI enrichment failed", e);
         }
@@ -110,12 +114,13 @@ public class AiAdvisor {
         }
 
         String prompt = """
-Верни строго JSON-массив без пояснений. Для каждого элемента входного списка создай объект вида:
-{"id":"<id из входа>","severity_0_10":<число 0..10>,"recommendation_ru":"лаконичная новая рекомендация на русском, не повторяй текст входных данных"}
-Важно: только JSON-массив, без текста до/после него.
+                Верни строго JSON-массив без пояснений. Для каждого элемента входного списка создай объект вида:
+                {"id":"<id из входа>","severity_0_10":<число 0..10>,"recommendation_ru":"лаконичная новая рекомендация на русском, не повторяй текст входных данных"}
+                Важно: только JSON-массив, без текста до/после него.
 
-Список уязвимостей:
-""" + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(input);
+                Список уязвимостей:
+                """
+                + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(input);
 
         messages.addObject()
                 .put("role", "user")
@@ -150,13 +155,16 @@ public class AiAdvisor {
                 if (parsed.isArray()) {
                     for (JsonNode it : parsed) {
                         String id = it.path("id").asText(null);
-                        if (id == null) continue;
+                        if (id == null)
+                            continue;
                         Double severity = it.path("severity_0_10").isNumber()
                                 ? it.get("severity_0_10").asDouble()
                                 : extractNumber(it.path("severity_0_10").asText());
                         String rec = it.path("recommendation_ru").asText(null);
-                        if (rec == null) rec = it.path("recommendation").asText(null);
-                        if (severity == null && rec == null) continue;
+                        if (rec == null)
+                            rec = it.path("recommendation").asText(null);
+                        if (severity == null && rec == null)
+                            continue;
                         out.put(id, new AiResult(severity, rec));
                     }
                 }
@@ -172,17 +180,23 @@ public class AiAdvisor {
     private Double extractNumber(String s) {
         try {
             java.util.regex.Matcher m = java.util.regex.Pattern.compile("([0-9]+(\\.[0-9]+)?)").matcher(s);
-            if (m.find()) return Double.parseDouble(m.group(1));
-        } catch (Exception ignored) {}
+            if (m.find())
+                return Double.parseDouble(m.group(1));
+        } catch (Exception ignored) {
+        }
         return null;
     }
 
     private String mask(String s) {
-        if (!maskSecrets) return s;
+        if (!maskSecrets)
+            return s;
         return Masking.maskSecrets(s);
     }
 
-    private static String nullToEmpty(String s) { return s == null? "": s; }
+    private static String nullToEmpty(String s) {
+        return s == null ? "" : s;
+    }
 
-    private record AiResult(Double severity, String recommendation) {}
+    private record AiResult(Double severity, String recommendation) {
+    }
 }
